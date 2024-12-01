@@ -3,16 +3,7 @@ import { ToastState } from "../types/toastSliceTypes";
 import { generateId } from "../../utils/misc";
 
 const initialState: ToastState = {
-  toastMessages: [
-    {
-      message: "test test test toast test",
-      type: "info",
-      id: generateId(),
-      show: true,
-      duration: 5000,
-      value: 100,
-    },
-  ],
+  toastMessages: [],
 };
 
 const toastSlice = createSlice({
@@ -20,7 +11,12 @@ const toastSlice = createSlice({
   initialState,
   reducers: {
     show(state, action) {
-      const toast = { ...action.payload, id: generateId() };
+      const toast = {
+        ...action.payload,
+        id: generateId(),
+        value: 100,
+        show: true,
+      };
       state.toastMessages.push(toast);
     },
     close(state, action) {

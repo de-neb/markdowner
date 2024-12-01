@@ -12,26 +12,15 @@ export default function Toast() {
   };
 
   useEffect(() => {
-    const timers = toastMessages.map((toast) =>
-      toast.show
-        ? setTimeout(() => {
-            console.log("did this run");
-            dispatch(toastActions.close(toast.id));
-          }, toast.duration)
-        : null
-    );
-
     const intervals = toastMessages.map((toast) =>
       toast.show && toast.value > 0
         ? setInterval(() => {
-            console.log("running");
             dispatch(toastActions.decreaseProgressValue(toast.id));
           }, 100)
         : null
     );
 
     return () => {
-      timers.forEach((timer) => timer && clearTimeout(timer));
       intervals.forEach((interval) => interval && clearInterval(interval));
     };
   }, [toastMessages, dispatch]);
@@ -42,7 +31,7 @@ export default function Toast() {
             toast.show ? (
               <div className="toast toast-end" key={toast.id}>
                 <div
-                  className={`relative items-center alert alert-${toast.type}`}
+                  className={`relative flex flex-nowrap items-center alert alert-${toast.type}`}
                 >
                   <span className="text-white">{toast.message}</span>
                   <button
@@ -54,7 +43,7 @@ export default function Toast() {
                   </button>
 
                   <progress
-                    className="progress absolute bottom-0 left-0 w-100"
+                    className="progress absolute bottom-0 left-0 w-100 h-1 rounded-none"
                     value={toast.value}
                     max="100"
                   ></progress>
