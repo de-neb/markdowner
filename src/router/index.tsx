@@ -1,12 +1,19 @@
+// utils
+import { createBrowserRouter } from "react-router";
+
+// pages
 import Auth from "../pages/Auth";
 import Home from "../pages/Home";
 import Editor from "../pages/Editor";
 import Profile from "../pages/Profile";
-import { createBrowserRouter } from "react-router";
+
+// layouts
+import DefaultLayout from "../layout/DefaultLayout";
 
 const routes = [
   {
     path: "/",
+    element: <DefaultLayout />,
     children: [
       {
         path: "",
@@ -37,6 +44,7 @@ const routes = [
 
   {
     path: "/auth",
+    element: <DefaultLayout />,
     children: [
       {
         path: "",
