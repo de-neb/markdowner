@@ -6,9 +6,11 @@ import Auth from "../pages/Auth";
 import Home from "../pages/Home";
 import Editor from "../pages/Editor";
 import Profile from "../pages/Profile";
+import Error from "../pages/Error";
 
 // layouts
 import DefaultLayout from "../layout/DefaultLayout";
+import AuthLayout from "../layout/AuthLayout";
 
 const routes = [
   {
@@ -16,27 +18,15 @@ const routes = [
     element: <DefaultLayout />,
     children: [
       {
-        path: "",
+        index: true,
         element: <Home />,
       },
-    ],
-  },
-
-  {
-    path: "/editor",
-    children: [
       {
-        path: "",
+        path: "/editor",
         element: <Editor />,
       },
-    ],
-  },
-
-  {
-    path: "/profile",
-    children: [
       {
-        path: "",
+        path: "/profile",
         element: <Profile />,
       },
     ],
@@ -44,13 +34,18 @@ const routes = [
 
   {
     path: "/auth",
-    element: <DefaultLayout />,
+    element: <AuthLayout />,
     children: [
       {
-        path: "",
+        index: true,
         element: <Auth />,
       },
     ],
+  },
+
+  {
+    path: "*",
+    element: <Error />,
   },
 ];
 

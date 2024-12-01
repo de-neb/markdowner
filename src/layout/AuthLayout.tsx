@@ -1,20 +1,18 @@
 import { Navigate, Outlet } from "react-router";
-import { RootState } from "../store";
 import { useSelector } from "react-redux";
+import { RootState } from "../store";
 import Toast from "../components/Toast";
 import Loader from "../components/Loader";
-import Navbar from "../components/Navbar";
 
 export default function DefaultLayout() {
   const session = useSelector((state: RootState) => state.session.session);
 
-  if (!session?.accessToken) {
-    return <Navigate to="/auth" />;
+  if (session?.accessToken) {
+    return <Navigate to="/" />;
   }
 
   return (
     <div className="h-screen w-screen relative">
-      <Navbar />
       <Outlet />
       <Toast />
       <Loader />

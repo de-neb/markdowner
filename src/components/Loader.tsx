@@ -1,8 +1,11 @@
+import { RootState } from "../store";
 import { useSelector } from "react-redux";
 
 export default function Loader() {
-  const loading = useSelector((state) => state.loader.loading);
-  const loadingText = useSelector((state) => state.loader.loadingText);
+  const loading = useSelector((state: RootState) => state.loader.loading);
+  const loadingText = useSelector(
+    (state: RootState) => state.loader.loadingText
+  );
 
   return (
     <>
