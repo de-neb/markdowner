@@ -1,7 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { SignupData } from "./type";
-import store from "../store";
 import { toastActions } from "../store/slices/toast";
+import { loaderActions } from "../store/slices/loader";
+import store from "../store";
 
 const supabase = createClient(
   import.meta.env.VITE_APP_SUPABASE_CLIENT,
@@ -10,6 +11,8 @@ const supabase = createClient(
 
 export const signUp = async (payload: SignupData) => {
   try {
+    store.dispatch(loaderActions.showLoader("Signing up..."));
+
     const response = await supabase.auth.signUp(payload);
 
     if (response.data.user && response.data.user.id) {
@@ -43,11 +46,15 @@ export const signUp = async (payload: SignupData) => {
         type: "error",
       })
     );
+  } finally {
+    store.dispatch(loaderActions.hideLoader());
   }
 };
 
 export const login = async (payload: SignupData) => {
   try {
+    store.dispatch(loaderActions.showLoader("Logging in..."));
+
     const { data, error } = await supabase.auth.signInWithPassword({
       ...payload,
       options: {
@@ -70,6 +77,8 @@ export const login = async (payload: SignupData) => {
       })
     );
     return false;
+  } finally {
+    store.dispatch(loaderActions.hideLoader());
   }
 };
 
