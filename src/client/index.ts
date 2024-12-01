@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { SignupData } from "./type";
 import { toastActions } from "../store/slices/toast";
 import { loaderActions } from "../store/slices/loader";
+import { sessionActions } from "../store/slices/session";
 import store from "../store";
 
 const supabase = createClient(
@@ -81,5 +82,25 @@ export const login = async (payload: SignupData) => {
     store.dispatch(loaderActions.hideLoader());
   }
 };
+
+export const logout = async () => {
+  try {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    store.dispatch(sessionActions.clearTokens());
+  }
+};
+
+supabase.auth.onAuthStateChange((_, session) => {
+  if (session) {
+    store.dispatch(sessionActions.setTokens(session));
+  } else {
+    store.dispatch(sessionActions.clearTokens());
+  }
+});
 
 export default supabase;

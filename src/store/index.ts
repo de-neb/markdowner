@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import toastReducer from "./slices/toast";
 import loaderReducer from "./slices/loader";
+import sessionReducer from "./slices/session";
 
 const store = configureStore({
   reducer: {
     toast: toastReducer,
     loader: loaderReducer,
+    session: sessionReducer,
   },
 });
 
