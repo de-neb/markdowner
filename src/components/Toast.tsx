@@ -24,6 +24,7 @@ export default function Toast() {
       intervals.forEach((interval) => interval && clearInterval(interval));
     };
   }, [toastMessages, dispatch]);
+
   return (
     <>
       {toastMessages.length
@@ -31,7 +32,7 @@ export default function Toast() {
             toast.show ? (
               <div className="toast toast-end" key={toast.id}>
                 <div
-                  className={`relative flex flex-nowrap items-center alert alert-${toast.type}`}
+                  className={`rounded-lg relative flex flex-nowrap items-center alert alert-${toast.type}`}
                 >
                   <span className="text-white">{toast.message}</span>
                   <button
@@ -43,7 +44,7 @@ export default function Toast() {
                   </button>
 
                   <progress
-                    className="progress absolute bottom-0 left-0 w-100 h-1 rounded-none"
+                    className="progress absolute bottom-0 left-0 w-100 h-1 rounded-lg"
                     value={toast.value}
                     max="100"
                   ></progress>
