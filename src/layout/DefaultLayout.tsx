@@ -13,7 +13,7 @@ export default function DefaultLayout() {
   }
 
   return (
-    <div className="h-screen w-screen relative">
+    <div className="h-full w-full relative">
       <Navbar />
       <Outlet />
       <Toast />
