@@ -1,23 +1,41 @@
-import { logout } from "../client";
+import { logout } from "../client/auth";
 import { useLocation, useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
 import { EDIT_ITEMS, FILE_ITEMS, INSERT_ITEMS } from "../constants/Navbar";
+import { navbarActions } from "../store/slices/navbar";
 import Dropdown from "./Dropdown";
+import { RootState } from "../store";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
-  const isEditorPage = location.pathname === "/editor";
+  const document = useSelector(
+    (state: RootState) => state.document.viewingDocument
+  );
+
+  const isEditorPage = location.pathname.includes("/editor");
 
   const handleLogout = async () => {
     await logout();
     navigate("/auth");
   };
 
+  const handleMenuItemClick = (title: string) => {
+    console.log("title", title);
+    dispatch(navbarActions.setNavAction(title));
+  };
+
+  const handleSubMenuItemClick = (title: string) => {
+    console.log("title sub menu item", title);
+    dispatch(navbarActions.setNavAction(title));
+  };
+
   return (
     <div className="navbar bg-base-100 border border-b-slate-200 sticky h-auto top-0 left-0 z-50">
       <div className="flex-none">
-        <a className="btn btn-ghost text-5xl">
+        <a className="btn btn-ghost text-5xl" onClick={() => navigate("/")}>
           <i className="fa-solid fa-hashtag"></i>
         </a>
       </div>
@@ -28,12 +46,30 @@ export default function Navbar() {
             type="text"
             placeholder="Type here"
             className="input h-1/2 max-w-xs input-ghost font-semibold"
-            defaultValue={"Untitled"}
+            defaultValue={document.title}
           />
           <div className="flex mr-auto gap-1">
-            <Dropdown title="File" items={FILE_ITEMS} />
-            <Dropdown title="Edit" items={EDIT_ITEMS} />
-            <Dropdown title="Insert" items={INSERT_ITEMS} />
+            <Dropdown
+              activatorClass="btn-xs"
+              title="File"
+              items={FILE_ITEMS}
+              menuItemClick={handleMenuItemClick}
+              subMenuItemClick={handleSubMenuItemClick}
+            />
+            <Dropdown
+              activatorClass="btn-xs"
+              title="Edit"
+              items={EDIT_ITEMS}
+              menuItemClick={handleMenuItemClick}
+              subMenuItemClick={handleSubMenuItemClick}
+            />
+            <Dropdown
+              activatorClass="btn-xs"
+              title="Insert"
+              items={INSERT_ITEMS}
+              menuItemClick={handleMenuItemClick}
+              subMenuItemClick={handleSubMenuItemClick}
+            />
           </div>
         </div>
       )}
