@@ -22,7 +22,7 @@ const routes = [
         element: <Home />,
       },
       {
-        path: "/editor",
+        path: "/editor/:documentId",
         element: <Editor />,
       },
       {
