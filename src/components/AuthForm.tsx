@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link, useFetcher, useNavigate, useSearchParams } from "react-router";
-import { signUp, login } from "../client";
+import { signUp, login } from "../client/auth";
 import { SignupData } from "../client/type";
 
 export default function AuthForm() {

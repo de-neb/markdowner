@@ -11,6 +11,10 @@ export default function Toast() {
     dispatch(toastActions.close(id));
   };
 
+  const toastClass = (type: string) => {
+    return `rounded-lg relative flex flex-nowrap items-center alert alert-${type}`;
+  };
+
   useEffect(() => {
     const intervals = toastMessages.map((toast) =>
       toast.show && toast.value > 0
@@ -31,9 +35,7 @@ export default function Toast() {
         ? toastMessages.map((toast) =>
             toast.show ? (
               <div className="toast toast-end" key={toast.id}>
-                <div
-                  className={`rounded-lg relative flex flex-nowrap items-center alert alert-${toast.type}`}
-                >
+                <div className={toastClass(toast.type)}>
                   <span className="text-white">{toast.message}</span>
                   <button
                     className="btn btn-circle btn-ghost"
@@ -50,9 +52,9 @@ export default function Toast() {
                   ></progress>
                 </div>
               </div>
-            ) : undefined
+            ) : null
           )
-        : undefined}
+        : null}
     </>
   );
 }
