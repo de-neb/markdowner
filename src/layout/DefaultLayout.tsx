@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import Toast from "../components/Toast";
 import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
+import Modal from "../components/Modal";
 
 export default function DefaultLayout() {
   const session = useSelector((state: RootState) => state.session.session);
@@ -13,11 +14,12 @@ export default function DefaultLayout() {
   }
 
   return (
-    <div className="h-full w-full relative">
+    <>
       <Navbar />
       <Outlet />
       <Toast />
       <Loader />
-    </div>
+      <Modal />
+    </>
   );
 }

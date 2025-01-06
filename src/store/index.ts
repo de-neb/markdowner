@@ -6,6 +6,7 @@ import sessionReducer from "./slices/session";
 import navbarReducer from "./slices/navbar";
 import userReducer from "./slices/user";
 import documentReducer from "./slices/document";
+import modalReducer from "./slices/modal";
 
 const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ const store = configureStore({
     navbar: navbarReducer,
     user: userReducer,
     document: documentReducer,
+    modal: modalReducer,
   },
 });
 
