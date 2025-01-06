@@ -1,24 +1,36 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { remark } from "remark";
-import { postDocument } from "../client/editor";
+import { useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import MonacoEditor from "@monaco-editor/react";
 import html from "remark-html";
 import remarkGfm from "remark-gfm";
 
-import "github-markdown-css/github-markdown.css";
+import {
+  postDocument,
+  updateDocument,
+  getDocumentContentById,
+} from "../client/document";
+
 import { RootState } from "../store";
 import { navbarActions } from "../store/slices/navbar";
 import { MarkdownerDocument } from "../client/type";
+import { documentActions } from "../store/slices/document";
 
 export default function Editor() {
   const [parsedValue, setParsedValue] = useState("");
+  const [content, setContent] = useState("");
   const navbarAction = useSelector((state: RootState) => state.navbar.action);
   const user = useSelector((state: RootState) => state.user.user);
+  const viewingDocument = useSelector(
+    (state: RootState) => state.document.viewingDocument
+  );
+  const params = useParams();
   const dispatch = useDispatch();
 
   const handleEditorChange = async (value) => {
+    setContent(value);
     const file = await remark().use(html).use(remarkGfm).process(`${value}`);
     setParsedValue(String(file));
   };
@@ -79,15 +91,26 @@ export default function Editor() {
     };
   }, [isDragging]);
 
-  //
+  // when navbar actions are triggered
   useEffect(() => {
     if (navbarAction === "Save") {
       const saveDocument = async () => {
         const document: MarkdownerDocument = {
-          title: "test",
+          ...viewingDocument,
+          title: viewingDocument.title,
           owner_id: user.id as string,
         };
-        await postDocument(document);
+        const documentContent = {
+          content: content,
+          document_id: viewingDocument.id,
+        };
+        await updateDocument(document, documentContent);
+        dispatch(
+          documentActions.setViewingDocument({
+            ...viewingDocument,
+            ...documentContent,
+          })
+        );
         dispatch(navbarActions.setNavAction(""));
       };
 
@@ -95,13 +118,23 @@ export default function Editor() {
     }
   }, [navbarAction, user]);
 
+  // on mounted
+  useEffect(() => {
+    const loadDocument = async () => {
+      const data = await getDocumentContentById(params.documentId as string);
+      handleEditorChange(data.Contents.content);
+    };
+
+    loadDocument();
+  }, [params]);
+
   return (
     <div
       ref={container}
-      className="flex flex-nowrap h-full w-full max-w-screen no-scrollbar"
+      className="flex flex-nowrap min-h-full w-full max-w-screen no-scrollbar"
     >
       <div
-        className="card rounded-none bg-base-100  grid h-full place-items-center overflow-y-auto overflow-x-hidden"
+        className="card rounded-none bg-base-100  grid min-h-full place-items-center overflow-y-auto overflow-x-hidden"
         style={{ width: editorWidth }}
       >
         <MonacoEditor
@@ -110,6 +143,7 @@ export default function Editor() {
           onChange={handleEditorChange}
           onMount={handleEditorDidMount}
           onValidate={handleEditorValidation}
+          value={viewingDocument?.Contents?.content}
           defaultLanguage="markdown"
           defaultValue="# Hello Markdown"
         />

@@ -11,7 +11,7 @@ export default function Toast() {
     dispatch(toastActions.close(id));
   };
 
-  const toastClass = (type: string) => {
+  const toastClass = (type: string = "primary") => {
     return `rounded-lg relative flex flex-nowrap items-center alert alert-${type}`;
   };
 

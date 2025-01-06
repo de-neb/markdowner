@@ -4,3 +4,14 @@ export const SORT_ITEMS = [
   "Last modified",
   "Title",
 ];
+
+export const HOME_CARD_OPTIONS = [
+  {
+    title: "Rename",
+    icon: "fa-t",
+  },
+  {
+    title: "Remove",
+    icon: "fa-trash-can",
+  },
+];
