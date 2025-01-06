@@ -1,10 +1,13 @@
-import { logout } from "../client/auth";
 import { useLocation, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
+import { useRef } from "react";
+
+import { logout } from "../client/auth";
 import { EDIT_ITEMS, FILE_ITEMS, INSERT_ITEMS } from "../constants/Navbar";
 import { navbarActions } from "../store/slices/navbar";
-import Dropdown from "./Dropdown";
+import { documentActions } from "../store/slices/document";
 import { RootState } from "../store";
+import Dropdown from "./Dropdown";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -15,7 +18,18 @@ export default function Navbar() {
     (state: RootState) => state.document.viewingDocument
   );
 
+  const documentTitle = useRef<HTMLInputElement>(null);
+
   const isEditorPage = location.pathname.includes("/editor");
+
+  const handleOnTitleInput = () => {
+    dispatch(
+      documentActions.setViewingDocument({
+        ...document,
+        title: documentTitle.current?.value,
+      })
+    );
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -23,12 +37,10 @@ export default function Navbar() {
   };
 
   const handleMenuItemClick = (title: string) => {
-    console.log("title", title);
     dispatch(navbarActions.setNavAction(title));
   };
 
   const handleSubMenuItemClick = (title: string) => {
-    console.log("title sub menu item", title);
     dispatch(navbarActions.setNavAction(title));
   };
 
@@ -47,6 +59,8 @@ export default function Navbar() {
             placeholder="Type here"
             className="input h-1/2 max-w-xs input-ghost font-semibold"
             defaultValue={document.title}
+            ref={documentTitle}
+            onInput={handleOnTitleInput}
           />
           <div className="flex mr-auto gap-1">
             <Dropdown
