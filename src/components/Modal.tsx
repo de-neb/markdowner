@@ -27,7 +27,7 @@ const SlotRender = ({
           type="text"
           className="input input-bordered input-primary input-sm w-full mt-4"
           ref={input}
-          onInput={handleOnInput}
+          onBlur={handleOnInput}
         />
       );
 
@@ -57,6 +57,7 @@ export default function Modal() {
       dialog.current?.showModal();
     } else {
       dialog.current?.close();
+      dispatch(modalActions.resetModal());
     }
   }, [isVisible]);
 
@@ -75,6 +76,10 @@ export default function Modal() {
         </p>
         <div className="modal-action mt-2">
           <form method="dialog" className="flex gap-2">
+            <Button
+              title={modalOptions?.cancelText ?? "Cancel"}
+              onClick={() => handleClose(false)}
+            />
             {modalOptions?.okText && (
               <Button
                 title={modalOptions?.okText ?? "Ok"}
@@ -82,10 +87,6 @@ export default function Modal() {
                 onClick={() => handleClose(true)}
               />
             )}
-            <Button
-              title={modalOptions?.cancelText ?? "Cancel"}
-              onClick={() => handleClose(false)}
-            />
           </form>
         </div>
       </div>

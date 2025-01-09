@@ -35,7 +35,7 @@ const modalSlice = createSlice({
       state.isVisible = false;
     },
     resetModal(state) {
-      state = initialState;
+      return initialState;
     },
     setIsConfirmed(state, action) {
       state.isConfirmed = action.payload;

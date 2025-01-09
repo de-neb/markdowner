@@ -36,12 +36,22 @@ export default function Navbar() {
     navigate("/auth");
   };
 
-  const handleMenuItemClick = (title: string) => {
-    dispatch(navbarActions.setNavAction(title));
+  const handleMenuItemClick = (item: string) => {
+    dispatch(navbarActions.setNavAction(item));
+
+    switch (item) {
+      case "Rename":
+        documentTitle.current?.focus();
+        documentTitle.current?.select();
+        break;
+
+      default:
+        break;
+    }
   };
 
-  const handleSubMenuItemClick = (title: string) => {
-    dispatch(navbarActions.setNavAction(title));
+  const handleSubMenuItemClick = (item: string) => {
+    dispatch(navbarActions.setNavAction(item));
   };
 
   return (
