@@ -5,7 +5,7 @@ import { MarkdownerDocument } from "../client/type";
 import { stringToMarkdown } from "../utils/parse";
 import { formatDate } from "../utils/misc";
 import { RootState } from "../store";
-import { renameDocumentTitle } from "../client/document";
+import { removeDocumentById, renameDocumentTitle } from "../client/document";
 
 type CardProps = {
   document: MarkdownerDocument;
@@ -14,6 +14,7 @@ type CardProps = {
 };
 
 export default function Card({ children, options, ...props }: CardProps) {
+  const [selectedOption, setSelectedOption] = useState("");
   const dispatch = useDispatch();
   const modal = useSelector((state: RootState) => state.modal);
   const [markdownPreview, setMarkdownPreview] = useState("");
@@ -45,8 +46,18 @@ export default function Card({ children, options, ...props }: CardProps) {
   const handleOptionClick = async (e: React.MouseEvent, option: string) => {
     e.stopPropagation();
 
+    setSelectedOption(option);
+
     switch (option) {
       case "Remove":
+        dispatch(
+          modalActions.showModal({
+            title: "Remove file?",
+            text: `${document.title} will be permanently removed.`,
+            okText: "Remove file",
+            payload: document.id,
+          })
+        );
         break;
       case "Rename":
         dispatch(
@@ -69,14 +80,25 @@ export default function Card({ children, options, ...props }: CardProps) {
       await renameDocumentTitle(modal.refValue, document.id!);
     };
 
+    const removeDocument = async () => {
+      await removeDocumentById(document.id!);
+    };
+
     if (
       modal.isConfirmed &&
       modal.refValue &&
-      document.id === modal.modalOptions?.payload
+      document.id === modal.modalOptions?.payload &&
+      selectedOption === "Rename"
     ) {
       renameDocument();
+    } else if (
+      modal.isConfirmed &&
+      document.id === modal.modalOptions?.payload &&
+      selectedOption === "Remove"
+    ) {
+      removeDocument();
     }
-  }, [modal, document.id]);
+  }, [modal, document.id, selectedOption]);
 
   useEffect(() => {
     const loadPreview = async () => {
