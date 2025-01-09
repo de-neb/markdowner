@@ -40,6 +40,8 @@ export const getDocuments = async () => {
       .select(`*,Contents(content)`)
       .order("opened_at", { ascending: false });
 
+    store.dispatch(documentActions.setDocuments(data));
+
     if (error) {
       throw error;
     }
@@ -167,6 +169,31 @@ export const renameDocumentTitle = async (
     }
 
     return data;
+  } catch (error: any) {
+    store.dispatch(
+      toastActions.show({
+        message: error.message,
+        type: "error",
+      })
+    );
+  } finally {
+    store.dispatch(loaderActions.hideLoader());
+  }
+};
+
+export const removeDocumentById = async (documentId: string) => {
+  try {
+    store.dispatch(loaderActions.showLoader("Removing Document..."));
+    const { error } = await supabase
+      .from("Documents")
+      .delete()
+      .eq("id", documentId);
+
+    await getDocuments();
+
+    if (error) {
+      throw error;
+    }
   } catch (error: any) {
     store.dispatch(
       toastActions.show({

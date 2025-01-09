@@ -60,8 +60,7 @@ export default function Home() {
 
   useEffect(() => {
     const loadDocuments = async () => {
-      const data = await getDocuments();
-      dispatch(documentActions.setDocuments(data));
+      await getDocuments();
     };
 
     loadDocuments();
