@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { remark } from "remark";
 import { useParams } from "react-router";
 import { useDispatch } from "react-redux";
-import MonacoEditor from "@monaco-editor/react";
+import MonacoEditor, { OnMount } from "@monaco-editor/react";
 import html from "remark-html";
 import remarkGfm from "remark-gfm";
 
@@ -21,6 +21,11 @@ import { documentActions } from "../store/slices/document";
 export default function Editor() {
   const [parsedValue, setParsedValue] = useState("");
   const [content, setContent] = useState("");
+  const [hasHighlightedText, setHasHighlightedText] = useState<boolean | null>(
+    false
+  );
+
+  const monacoEditorRef = useRef<Parameters<OnMount>[0] | null>(null);
   const navbarAction = useSelector((state: RootState) => state.navbar.action);
   const user = useSelector((state: RootState) => state.user.user);
   const viewingDocument = useSelector(
@@ -35,16 +40,109 @@ export default function Editor() {
     setParsedValue(String(file));
   };
 
-  function handleEditorDidMount(editor) {
-    editor.current = editor;
+  const handleEditorDidMount: OnMount = (editor) => {
+    monacoEditorRef.current = editor;
     handleEditorChange(editor.getValue());
-  }
 
-  function handleEditorValidation(markers) {
-    // model markers
-    // markers.forEach(marker => console.log('onValidate:', marker.message));
-  }
+    editor.onDidChangeCursorSelection(() => {
+      getHighlightedText();
+    });
+  };
 
+  // when navbar actions are triggered
+  const getHighlightedText = (operation?: string) => {
+    if (monacoEditorRef.current) {
+      const editor = monacoEditorRef.current;
+      const selection = editor.getSelection();
+      const model = editor.getModel();
+
+      setHasHighlightedText(selection && !selection.isEmpty());
+
+      if (selection && model) {
+        const highlightedText = model.getValueInRange(selection);
+        const allHighligtedText = model.getFullModelRange();
+
+        switch (operation) {
+          case "Cut":
+          case "Paste":
+            navigator.clipboard.readText().then((text: string) => {
+              editor.executeEdits("", [
+                {
+                  range: selection,
+                  text: operation === "Cut" ? "" : text,
+                  forceMoveMarkers: true,
+                },
+              ]);
+              editor.pushUndoStop();
+            });
+
+            break;
+          case "Copy":
+            navigator.clipboard.writeText(highlightedText);
+            break;
+          case "Select All":
+            editor.setSelection(allHighligtedText);
+            editor.focus();
+            break;
+          case "Delete":
+            editor.setValue("");
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (hasHighlightedText) {
+      dispatch(navbarActions.setDisabledActions([]));
+    } else {
+      dispatch(navbarActions.setDisabledActions(["Cut", "Delete"]));
+    }
+  }, [hasHighlightedText]);
+
+  useEffect(() => {
+    switch (navbarAction) {
+      case "Save":
+        const saveDocument = async () => {
+          const document: MarkdownerDocument = {
+            ...viewingDocument,
+            title: viewingDocument.title,
+            owner_id: user.id as string,
+          };
+          const documentContent = {
+            content: content,
+            document_id: viewingDocument.id,
+          };
+          await updateDocument(document, documentContent);
+          dispatch(
+            documentActions.setViewingDocument({
+              ...viewingDocument,
+              ...documentContent,
+            })
+          );
+          dispatch(navbarActions.setNavAction(""));
+        };
+
+        saveDocument();
+        break;
+      case "Undo":
+        monacoEditorRef.current.trigger(null, "undo", null);
+        dispatch(navbarActions.setNavAction(""));
+        break;
+      case "Redo":
+        monacoEditorRef.current.trigger(null, "redo", null);
+        dispatch(navbarActions.setNavAction(""));
+        break;
+      default:
+        getHighlightedText(navbarAction);
+        dispatch(navbarActions.setNavAction(""));
+        break;
+    }
+  }, [navbarAction, user]);
+
+  // for controling editor and viewer width
   const [isDragging, setIsDragging] = useState(false);
   const [editorWidth, setEditorWidth] = useState("50%");
   const [outputWidth, setOutputWidth] = useState("50%");
@@ -91,32 +189,7 @@ export default function Editor() {
     };
   }, [isDragging]);
 
-  // when navbar actions are triggered
-  useEffect(() => {
-    if (navbarAction === "Save") {
-      const saveDocument = async () => {
-        const document: MarkdownerDocument = {
-          ...viewingDocument,
-          title: viewingDocument.title,
-          owner_id: user.id as string,
-        };
-        const documentContent = {
-          content: content,
-          document_id: viewingDocument.id,
-        };
-        await updateDocument(document, documentContent);
-        dispatch(
-          documentActions.setViewingDocument({
-            ...viewingDocument,
-            ...documentContent,
-          })
-        );
-        dispatch(navbarActions.setNavAction(""));
-      };
-
-      saveDocument();
-    }
-  }, [navbarAction, user]);
+  const handleEditorValidation = () => {};
 
   // on mounted
   useEffect(() => {
@@ -138,6 +211,7 @@ export default function Editor() {
         style={{ width: editorWidth }}
       >
         <MonacoEditor
+          ref={monacoEditorRef}
           height="98%"
           width="100%"
           onChange={handleEditorChange}

@@ -2,10 +2,12 @@ import { createSlice } from "@reduxjs/toolkit";
 
 type NavbarState = {
   action: string;
+  disabledActions: string[];
 };
 
 const initialState: NavbarState = {
   action: "",
+  disabledActions: ["Cut", "Delete"],
 };
 
 const navbarSlice = createSlice({
@@ -14,6 +16,9 @@ const navbarSlice = createSlice({
   reducers: {
     setNavAction(state, action) {
       state.action = action.payload;
+    },
+    setDisabledActions(state, action) {
+      state.disabledActions = action.payload;
     },
   },
 });

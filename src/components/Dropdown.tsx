@@ -10,6 +10,7 @@ type DropdownProps = {
   icon?: string;
   menuItemClick: (item: string) => void;
   subMenuItemClick?: (item: string) => void;
+  disabledActions?: string[];
 };
 
 export default function Dropdown({
@@ -20,6 +21,7 @@ export default function Dropdown({
   menuClass,
   menuItemClick,
   subMenuItemClick,
+  disabledActions,
 }: DropdownProps) {
   const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
 
@@ -33,6 +35,10 @@ export default function Dropdown({
 
   const handleMouseLeave = () => {
     setActiveItemIndex(null);
+  };
+
+  const isDisabled = (action: string) => {
+    return disabledActions?.includes(action);
   };
 
   const handleSubItemClick = (e: any, title: string) => {
@@ -88,9 +94,19 @@ export default function Dropdown({
             <li
               key={typeof item === "string" ? item : item.title}
               className="flex flex-nowrap"
-              onClick={() => menuItemClick(item.title as string)}
+              onClick={
+                isDisabled(item.title)
+                  ? null
+                  : () => menuItemClick(item.title as string)
+              }
             >
-              <a>
+              <a
+                className={
+                  isDisabled(item.title)
+                    ? "pointer-events-none text-slate-400"
+                    : ""
+                }
+              >
                 {item.icon && <i className={`fa-solid fa-${item.icon}`}></i>}
                 {typeof item === "string" ? item : item.title}
               </a>

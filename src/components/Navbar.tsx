@@ -14,6 +14,10 @@ export default function Navbar() {
   const location = useLocation();
   const dispatch = useDispatch();
 
+  const disabledActions = useSelector(
+    (state: RootState) => state.navbar.disabledActions
+  );
+
   const document = useSelector(
     (state: RootState) => state.document.viewingDocument
   );
@@ -86,6 +90,7 @@ export default function Navbar() {
               items={EDIT_ITEMS}
               menuItemClick={handleMenuItemClick}
               subMenuItemClick={handleSubMenuItemClick}
+              disabledActions={disabledActions}
             />
             <Dropdown
               activatorClass="btn-xs"
