@@ -7,11 +7,7 @@ import MonacoEditor, { OnMount } from "@monaco-editor/react";
 import html from "remark-html";
 import remarkGfm from "remark-gfm";
 
-import {
-  postDocument,
-  updateDocument,
-  getDocumentContentById,
-} from "../client/document";
+import { updateDocument, getDocumentContentById } from "../client/document";
 
 import { RootState } from "../store";
 import { navbarActions } from "../store/slices/navbar";
@@ -34,7 +30,10 @@ export default function Editor() {
   const params = useParams();
   const dispatch = useDispatch();
 
-  const handleEditorChange = async (value) => {
+  const handleEditorChange = async (value: string | undefined) => {
+    if (!value) {
+      return;
+    }
     setContent(value);
     const file = await remark().use(html).use(remarkGfm).process(`${value}`);
     setParsedValue(String(file));
@@ -113,7 +112,7 @@ export default function Editor() {
           };
           const documentContent = {
             content: content,
-            document_id: viewingDocument.id,
+            document_id: viewingDocument.id!,
           };
           await updateDocument(document, documentContent);
           dispatch(
@@ -128,11 +127,11 @@ export default function Editor() {
         saveDocument();
         break;
       case "Undo":
-        monacoEditorRef.current.trigger(null, "undo", null);
+        monacoEditorRef.current?.trigger(null, "undo", null);
         dispatch(navbarActions.setNavAction(""));
         break;
       case "Redo":
-        monacoEditorRef.current.trigger(null, "redo", null);
+        monacoEditorRef.current?.trigger(null, "redo", null);
         dispatch(navbarActions.setNavAction(""));
         break;
       default:

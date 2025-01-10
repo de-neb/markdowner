@@ -1,8 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { MarkdownerDocument } from "../../client/type";
 
-const initialState = {
+interface DocumentInitialState {
+  documents: MarkdownerDocument[];
+  viewingDocument: MarkdownerDocument;
+}
+
+const initialState: DocumentInitialState = {
   documents: [],
-  viewingDocument: {},
+  viewingDocument: {
+    title: "",
+    owner_id: "",
+  },
 };
 
 const documentSlice = createSlice({
