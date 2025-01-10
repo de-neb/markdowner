@@ -3,11 +3,16 @@ import { createSlice } from "@reduxjs/toolkit";
 type NavbarState = {
   action: string;
   disabledActions: string[];
+  tableSize: {
+    rows: number;
+    cols: number;
+  };
 };
 
 const initialState: NavbarState = {
   action: "",
   disabledActions: ["Cut", "Delete"],
+  tableSize: { rows: 0, cols: 0 },
 };
 
 const navbarSlice = createSlice({
@@ -19,6 +24,9 @@ const navbarSlice = createSlice({
     },
     setDisabledActions(state, action) {
       state.disabledActions = action.payload;
+    },
+    setTableSize(state, action) {
+      state.tableSize = action.payload;
     },
   },
 });

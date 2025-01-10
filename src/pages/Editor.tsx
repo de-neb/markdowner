@@ -13,6 +13,8 @@ import { RootState } from "../store";
 import { navbarActions } from "../store/slices/navbar";
 import { MarkdownerDocument } from "../client/type";
 import { documentActions } from "../store/slices/document";
+import { generateMarkdownTable } from "../utils/misc";
+import { MARKDOWN_SYNTAX } from "../constants/Editor";
 
 export default function Editor() {
   const [parsedValue, setParsedValue] = useState("");
@@ -23,6 +25,7 @@ export default function Editor() {
 
   const monacoEditorRef = useRef<Parameters<OnMount>[0] | null>(null);
   const navbarAction = useSelector((state: RootState) => state.navbar.action);
+  const tableSize = useSelector((state: RootState) => state.navbar.tableSize);
   const user = useSelector((state: RootState) => state.user.user);
   const viewingDocument = useSelector(
     (state: RootState) => state.document.viewingDocument
@@ -93,6 +96,28 @@ export default function Editor() {
     }
   };
 
+  const insertTextAtCursor = (text: string) => {
+    if (monacoEditorRef.current) {
+      const editor = monacoEditorRef.current;
+      const position = editor.getPosition();
+      if (position) {
+        editor.executeEdits("", [
+          {
+            range: {
+              startLineNumber: position.lineNumber,
+              startColumn: position.column,
+              endLineNumber: position.lineNumber,
+              endColumn: position.column,
+            },
+            text: text,
+            forceMoveMarkers: true,
+          },
+        ]);
+        editor.pushUndoStop();
+      }
+    }
+  };
+
   useEffect(() => {
     if (hasHighlightedText) {
       dispatch(navbarActions.setDisabledActions([]));
@@ -128,18 +153,23 @@ export default function Editor() {
         break;
       case "Undo":
         monacoEditorRef.current?.trigger(null, "undo", null);
-        dispatch(navbarActions.setNavAction(""));
         break;
       case "Redo":
         monacoEditorRef.current?.trigger(null, "redo", null);
-        dispatch(navbarActions.setNavAction(""));
+        break;
+      case "Custom Table":
+        const markdownTableText = generateMarkdownTable(tableSize);
+        insertTextAtCursor(markdownTableText);
         break;
       default:
+        if (Object.keys(MARKDOWN_SYNTAX).includes(navbarAction)) {
+          insertTextAtCursor(MARKDOWN_SYNTAX[navbarAction]);
+        }
         getHighlightedText(navbarAction);
-        dispatch(navbarActions.setNavAction(""));
         break;
     }
-  }, [navbarAction, user]);
+    dispatch(navbarActions.setNavAction(""));
+  }, [navbarAction, user, tableSize]);
 
   // for controling editor and viewer width
   const [isDragging, setIsDragging] = useState(false);

@@ -25,7 +25,7 @@ export const INSERT_ITEMS = [
   {
     title: "Tables",
     icon: "table",
-    subItems: ["2x2 customized here add user input"],
+    subItems: ["Custom Table"],
   },
   {
     title: "Horizontal Rule",

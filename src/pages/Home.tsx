@@ -28,9 +28,7 @@ export default function Home() {
     );
   };
 
-  const handleMenuItemClick = (title: string) => {
-    console.log("title", title);
-  };
+  const handleMenuItemClick = (title: string) => {};
 
   const handleCardClick = (document: MarkdownerDocument) => {
     dispatch(documentActions.setViewingDocument(document));

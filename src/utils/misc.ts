@@ -18,3 +18,27 @@ export const formatDate = (
   );
   return formattedDate;
 };
+
+export const generateMarkdownTable = (tableSize: {
+  rows: number;
+  cols: number;
+}) => {
+  const { rows, cols } = tableSize;
+  const headerRow = Array.from(
+    { length: cols },
+    (_, index) => `Header ${index + 1}`
+  ).join(" | ");
+  const separatorRow = Array.from({ length: cols }, () => "---").join(" | ");
+
+  const contentRows = Array.from({ length: rows }, (_, rowIndex) =>
+    Array.from(
+      { length: cols },
+      (_, colIndex) => `R${rowIndex + 1}C${colIndex + 1}`
+    ).join(" | ")
+  ).join("\n");
+
+  return `| ${headerRow} |\n| ${separatorRow} |\n${contentRows
+    .split("\n")
+    .map((row) => `| ${row} |`)
+    .join("\n")}`;
+};

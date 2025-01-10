@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Tiles from "./Tiles";
 
 type DropdownProps = {
   title?: string;
@@ -81,7 +82,7 @@ export default function Dropdown({
                         key={subIndex}
                         onClick={() => subMenuItemClick(subItem)}
                       >
-                        <a>{subItem}</a>
+                        {item.title === "Tables" ? <Tiles /> : <a>{subItem}</a>}
                       </li>
                     ))}
                   </ul>
@@ -96,7 +97,7 @@ export default function Dropdown({
               className="flex flex-nowrap"
               onClick={
                 isDisabled(item.title)
-                  ? null
+                  ? undefined
                   : () => menuItemClick(item.title as string)
               }
             >
