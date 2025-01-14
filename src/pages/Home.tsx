@@ -6,7 +6,7 @@ import { HOME_CARD_OPTIONS, SORT_ITEMS } from "../constants/Home";
 import { getDocuments, postDocument } from "../client/document";
 import { documentActions } from "../store/slices/document";
 
-import Card from "../components/Card";
+import HomeDocument from "../components/HomeDocument";
 import Dropdown from "../components/Dropdown";
 import Button from "../components/Button";
 import { RootState } from "../store";
@@ -15,8 +15,11 @@ import { MarkdownerDocument } from "../client/type";
 export default function Home() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [listView, setListView] = useState("border-all");
+  const [listView, setListView] = useState("list");
   const documents = useSelector((state: RootState) => state.document.documents);
+  const isSearching = useSelector(
+    (state: RootState) => state.document.isSearching
+  );
   const user = useSelector((state: RootState) => state.user.user);
   const modal = useSelector((state: RootState) => state.modal);
 
@@ -28,7 +31,23 @@ export default function Home() {
     );
   };
 
-  const handleMenuItemClick = (title: string) => {};
+  const handleMenuItemClick = async (title: string) => {
+    let key = "";
+    switch (title) {
+      case "Last modified":
+        key = "updated_at";
+        break;
+      case "Last opened":
+        key = "opened_at";
+        break;
+      case "Title":
+        key = "title";
+        break;
+      default:
+        break;
+    }
+    await getDocuments(key as keyof MarkdownerDocument);
+  };
 
   const handleCardClick = (document: MarkdownerDocument) => {
     dispatch(documentActions.setViewingDocument(document));
@@ -49,26 +68,29 @@ export default function Home() {
 
   useEffect(() => {
     const loadDocuments = async () => {
-      const data = await getDocuments();
-      dispatch(documentActions.setDocuments(data));
+      await getDocuments();
     };
 
     loadDocuments();
   }, []);
 
   useEffect(() => {
-    const loadDocuments = async () => {
-      await getDocuments();
-    };
+    if (modal.isConfirmed) {
+      const loadDocuments = async () => {
+        await getDocuments();
+      };
 
-    loadDocuments();
+      loadDocuments();
+    }
   }, [modal.isConfirmed]);
 
   return (
     <>
       <div className="flex h-max justify-items-center flex-col my-10 mx-auto w-5/6">
         <div className="flex-grow flex justify-between items-center gap-1">
-          <h2 className="font-semibold">Recent Documents</h2>
+          <h2 className="font-semibold">
+            {isSearching ? "Results" : "Documents"}
+          </h2>
 
           <Button icon={listView} onClick={toggleListView} />
 
@@ -79,29 +101,35 @@ export default function Home() {
           />
         </div>
 
-        {isGridView && (
-          <div className="flex-grow flex flex-wrap gap-2">
-            {documents.length
-              ? documents.map((document) => (
-                  <div
-                    onClick={() => handleCardClick(document)}
-                    key={document.id}
-                  >
-                    <Card
-                      src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-                      document={document}
-                      options={HOME_CARD_OPTIONS}
-                    ></Card>
-                  </div>
-                ))
-              : "No documents found."}
-          </div>
-        )}
+        <div
+          className={`flex-grow flex flex-wrap ${
+            !isGridView ? "gap-2" : undefined
+          }`}
+        >
+          {documents.length ? (
+            documents.map((document, i) => (
+              <div
+                onClick={() => handleCardClick(document)}
+                key={document.id}
+                className={isGridView ? "w-full" : undefined}
+              >
+                <HomeDocument
+                  document={document}
+                  options={HOME_CARD_OPTIONS}
+                  isCardView={!isGridView}
+                ></HomeDocument>
 
-        {
-          /* {!isGridView} */
-          // todo list view
-        }
+                {i >= 0 && i < documents.length - 1 && isGridView && (
+                  <div className="divider m-0"></div>
+                )}
+              </div>
+            ))
+          ) : (
+            <span className="text-md mx-auto">
+              No documents have been created yet.
+            </span>
+          )}
+        </div>
       </div>
       <div className="flex absolute bottom-5 right-10">
         <div className="tooltip tooltip-left" data-tip="Create new document">
