@@ -34,9 +34,9 @@ export default function Toast() {
       {toastMessages.length
         ? toastMessages.map((toast) =>
             toast.show ? (
-              <div className="toast toast-end" key={toast.id}>
+              <div className="toast toast-end toast-primary" key={toast.id}>
                 <div className={toastClass(toast.type)}>
-                  <span className="text-white">{toast.message}</span>
+                  <span>{toast.message}</span>
                   <button
                     className="btn btn-circle btn-ghost"
                     onClick={() => handleToastClose(toast.id)}

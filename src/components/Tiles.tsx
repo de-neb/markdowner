@@ -16,8 +16,10 @@ export default function Tiles() {
   };
 
   return (
-    <div className="p-4 w-auto h-auto flex flex-col items-center">
-      <div className={`grid grid-cols-${gridSize} grid-rows-${gridSize} gap-0`}>
+    <div className="p-4 w-full h-auto flex flex-col items-center">
+      <div
+        className={`grid grid-cols-[repeat(10,1fr)] grid-rows-[repeat(10,1fr)] gap-0`}
+      >
         {gridItems.map((_, index) => {
           const row = Math.floor(index / gridSize) + 1;
           const col = (index % gridSize) + 1;
@@ -39,8 +41,8 @@ export default function Tiles() {
       </div>
 
       <p className="text-xs text-slate-500 font-semibold">
-        {tableSize.rows > 0 && tableSize.cols > 0
-          ? `Insert ${tableSize.rows} x ${tableSize.cols} Table`
+        {hoveredSize.rows > 0 && hoveredSize.cols > 0
+          ? `Insert ${hoveredSize.rows} x ${hoveredSize.cols} Table`
           : "Hover over the grid to select table size"}
       </p>
     </div>

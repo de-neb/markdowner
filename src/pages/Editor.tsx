@@ -163,7 +163,9 @@ export default function Editor() {
         break;
       default:
         if (Object.keys(MARKDOWN_SYNTAX).includes(navbarAction)) {
-          insertTextAtCursor(MARKDOWN_SYNTAX[navbarAction]);
+          insertTextAtCursor(
+            MARKDOWN_SYNTAX[navbarAction as keyof typeof MARKDOWN_SYNTAX]
+          );
         }
         getHighlightedText(navbarAction);
         break;
@@ -224,7 +226,7 @@ export default function Editor() {
   useEffect(() => {
     const loadDocument = async () => {
       const data = await getDocumentContentById(params.documentId as string);
-      handleEditorChange(data.Contents.content);
+      handleEditorChange(data.content);
     };
 
     loadDocument();
@@ -235,22 +237,18 @@ export default function Editor() {
       ref={container}
       className="flex flex-nowrap min-h-full w-full max-w-screen no-scrollbar"
     >
-      <div
-        className="card rounded-none bg-base-100  grid min-h-full place-items-center overflow-y-auto overflow-x-hidden"
-        style={{ width: editorWidth }}
-      >
-        <MonacoEditor
-          ref={monacoEditorRef}
-          height="98%"
-          width="100%"
-          onChange={handleEditorChange}
-          onMount={handleEditorDidMount}
-          onValidate={handleEditorValidation}
-          value={viewingDocument?.Contents?.content}
-          defaultLanguage="markdown"
-          defaultValue="# Hello Markdown"
-        />
-      </div>
+      <MonacoEditor
+        ref={monacoEditorRef}
+        height="100vh"
+        width={editorWidth}
+        onChange={handleEditorChange}
+        onMount={handleEditorDidMount}
+        onValidate={handleEditorValidation}
+        value={viewingDocument?.Contents?.content}
+        defaultLanguage="markdown"
+        defaultValue="# Hello Markdown"
+        className="min-h-full"
+      />
       <div
         ref={divider}
         className="bg-slate-300 cursor-ew-resize w-2"
