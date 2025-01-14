@@ -16,3 +16,8 @@ body,
   margin: 0;
   padding: 0;
 }
+
+.auth-bg {
+  background: url("/src/assets/markdown-bg.png") repeat center center fixed;
+  background-size: contain;
+}
