@@ -1,8 +1,9 @@
 import { useLocation, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import { logout } from "../client/auth";
+import { searchDocuments, getDocuments } from "../client/document";
 import { EDIT_ITEMS, FILE_ITEMS, INSERT_ITEMS } from "../constants/Navbar";
 import { navbarActions } from "../store/slices/navbar";
 import { documentActions } from "../store/slices/document";
@@ -13,6 +14,16 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const handleSearchDocuments = async (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === "Enter") {
+      await searchDocuments("title", searchRef.current?.value as string);
+    }
+  };
 
   const disabledActions = useSelector(
     (state: RootState) => state.navbar.disabledActions
@@ -111,7 +122,10 @@ export default function Navbar() {
               type="text"
               className="grow w-[500px]"
               placeholder="Search"
+              ref={searchRef}
+              onKeyDown={handleSearchDocuments}
             />
+            <kbd className="kbd kbd-sm">Enter</kbd>
           </label>
         </div>
       )}

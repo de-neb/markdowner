@@ -7,14 +7,13 @@ export interface MarkdownerDocument {
   id?: string;
   title: string;
   owner_id: string;
+  owner_email: string;
   created_at?: string;
   updated_at?: string;
   is_public?: boolean;
   is_active?: boolean;
   opened_at?: string;
-  Contents?: {
-    content: string;
-  };
+  content?: string;
 }
 
 export interface DocumentContent {

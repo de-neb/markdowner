@@ -31,14 +31,55 @@ export const postDocument = async (document: MarkdownerDocument) => {
   }
 };
 
-export const getDocuments = async () => {
+export const searchDocuments = async (
+  orderBy: keyof MarkdownerDocument = "opened_at",
+  searchBy: string
+) => {
+  try {
+    store.dispatch(loaderActions.showLoader("Searching document(s)..."));
+    store.dispatch(documentActions.setIsSearching(true));
+
+    if (searchBy === "") {
+      getDocuments();
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("documents_with_users")
+      .select("*")
+      .ilike("title", searchBy)
+      .order(orderBy, { ascending: orderBy === "title" });
+
+    store.dispatch(documentActions.setDocuments(data));
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error: any) {
+    store.dispatch(
+      toastActions.show({
+        message: error.message,
+        type: "error",
+      })
+    );
+  } finally {
+    store.dispatch(loaderActions.hideLoader());
+    store.dispatch(documentActions.setIsSearching(false));
+  }
+};
+
+export const getDocuments = async (
+  orderBy: keyof MarkdownerDocument = "opened_at"
+) => {
   try {
     store.dispatch(loaderActions.showLoader("Loading documents..."));
 
     const { data, error } = await supabase
-      .from("Documents")
-      .select(`*,Contents(content)`)
-      .order("opened_at", { ascending: false });
+      .from("documents_with_users")
+      .select("*")
+      .order(orderBy, { ascending: orderBy === "title" });
 
     store.dispatch(documentActions.setDocuments(data));
 

@@ -1,8 +1,16 @@
 export const SORT_ITEMS = [
-  "Last opened by me",
-  "Last modified by me",
-  "Last modified",
-  "Title",
+  {
+    title: "Last opened",
+    icon: "",
+  },
+  {
+    title: "Last modified",
+    icon: "",
+  },
+  {
+    title: "Title",
+    icon: "",
+  },
 ];
 
 export const HOME_CARD_OPTIONS = [
