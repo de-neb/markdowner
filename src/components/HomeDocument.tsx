@@ -7,13 +7,19 @@ import { formatDate } from "../utils/misc";
 import { RootState } from "../store";
 import { removeDocumentById, renameDocumentTitle } from "../client/document";
 
-type CardProps = {
+type HomeDocument = {
   document: MarkdownerDocument;
   children?: React.ReactNode;
   options?: any[];
+  isCardView?: boolean;
 };
 
-export default function Card({ children, options, ...props }: CardProps) {
+export default function HomeDocument({
+  children,
+  options,
+  isCardView,
+  ...props
+}: HomeDocument) {
   const [selectedOption, setSelectedOption] = useState("");
   const dispatch = useDispatch();
   const modal = useSelector((state: RootState) => state.modal);
@@ -102,7 +108,7 @@ export default function Card({ children, options, ...props }: CardProps) {
 
   useEffect(() => {
     const loadPreview = async () => {
-      const file = await stringToMarkdown(props.document.Contents!.content);
+      const file = await stringToMarkdown(props.document!.content);
       setMarkdownPreview(String(file));
     };
 
@@ -110,30 +116,79 @@ export default function Card({ children, options, ...props }: CardProps) {
   }, [props.document]);
 
   return (
-    <div className="card card-compact rounded-sm bg-base-100 w-56 divide-y-2  shadow-sm border border-slate-300 hover:border-primary hover:cursor-pointer">
-      <div style={{ width: "200px", height: "150px", overflow: "hidden" }}>
-        <svg viewBox="0 0 800 600" width="200" height="150">
-          <foreignObject width="100%" height="100%">
-            <div
-              xmlns="http://www.w3.org/1999/xhtml"
-              className="markdown-body !text-3xl p-10"
-              dangerouslySetInnerHTML={{ __html: markdownPreview }}
-            ></div>
-          </foreignObject>
-        </svg>
-      </div>
-      <div className="card-body">
-        <h6 className="card-title text-base">{document.title}</h6>
-        {children && children}
-        {!children && (
-          <div className="card-actions justify-between flex-nowrap items-center">
-            <i className="fa-regular fa-file-lines text-2xl"></i>
-            <span className="text-xs text-slate-500">
-              {document.opened_at
-                ? `Opened at ${setOpenedDateOrTime(document.opened_at!)}`
-                : formatDate(document.created_at!)}
-            </span>
+    <>
+      {isCardView && (
+        <div className="card card-compact rounded-sm bg-base-100 w-56 divide-y-2  shadow-sm border border-slate-300 hover:border-primary hover:cursor-pointer">
+          <div style={{ width: "200px", height: "150px", overflow: "hidden" }}>
+            <svg viewBox="0 0 800 600" width="200" height="150">
+              <foreignObject width="100%" height="100%">
+                <div
+                  xmlns="http://www.w3.org/1999/xhtml"
+                  className="markdown-body !text-3xl p-10"
+                  dangerouslySetInnerHTML={{ __html: markdownPreview }}
+                ></div>
+              </foreignObject>
+            </svg>
+          </div>
+          <div className="card-body">
+            <h6 className="card-title text-base overflow-hidden text-ellipsis">
+              {document.title}
+            </h6>
+            {children && children}
+            {!children && (
+              <div className="card-actions justify-between flex-nowrap items-center">
+                <i className="fa-regular fa-file-lines text-2xl"></i>
+                <span className="text-xs text-slate-500">
+                  {document.opened_at
+                    ? `Opened at ${setOpenedDateOrTime(document.opened_at!)}`
+                    : formatDate(document.created_at!)}
+                </span>
 
+                {options && options.length > 0 ? (
+                  <div className="dropdown relative">
+                    <button
+                      tabIndex={0}
+                      role="button"
+                      className="btn btn-circle btn-sm btn-ghost m-1"
+                      onClick={handleMoreOptions}
+                    >
+                      <i className="fa-solid fa-ellipsis-vertical"></i>
+                    </button>
+                    <ul
+                      tabIndex={0}
+                      className="absolute top-full left-[50%] translate-x-[-50%] dropdown-content menu bg-base-100 z-[1] w-52 p-0 shadow-lg [&_li>*]:rounded-none"
+                    >
+                      {options?.map((option) => (
+                        <li
+                          key={option.title}
+                          onClick={(e: React.MouseEvent) =>
+                            handleOptionClick(e, option.title)
+                          }
+                        >
+                          <a>
+                            <i className={`fa-solid ${option.icon}`}></i>{" "}
+                            {option.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {!isCardView && (
+        <>
+          <li className=" flex px-3 justify-evenly items-center gap-4 w-full hover:bg-slate-100 hover:cursor-pointer hover:rounded-full">
+            <i className="fa-regular fa-file-lines text-2xl text-info"></i>
+            <span className="mr-auto w-72 overflow-hidden text-ellipsis">
+              {document.title}
+            </span>
+            <span className="mr-auto">{document.owner_email}</span>
+            <span>{formatDate(document.created_at as string)}</span>
             {options && options.length > 0 ? (
               <div className="dropdown relative">
                 <button
@@ -164,15 +219,9 @@ export default function Card({ children, options, ...props }: CardProps) {
                 </ul>
               </div>
             ) : null}
-          </div>
-        )}
-      </div>
-    </div>
+          </li>
+        </>
+      )}
+    </>
   );
 }
-
-Card.Actions = function Actions({ children }: { children?: React.ReactNode }) {
-  return (
-    <div className="card-actions justify-between items-center">{children}</div>
-  );
-};
