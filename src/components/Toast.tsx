@@ -12,7 +12,7 @@ export default function Toast() {
   };
 
   const toastClass = (type: string = "primary") => {
-    return `rounded-lg relative flex flex-nowrap items-center alert alert-${type}`;
+    return `rounded-lg relative flex flex-nowrap items-center alert alert-primary`;
   };
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function Toast() {
       {toastMessages.length
         ? toastMessages.map((toast) =>
             toast.show ? (
-              <div className="toast toast-end toast-primary" key={toast.id}>
+              <div className="toast toast-end z-[2000]" key={toast.id}>
                 <div className={toastClass(toast.type)}>
                   <span>{toast.message}</span>
                   <button

@@ -101,7 +101,9 @@ export default function AuthForm() {
             />
           </label>
           {inputError && (
-            <span className="ml-5 text-error text-xs">{inputError}</span>
+            <span className="ml-5 text-red-700 text-xs font-bold">
+              {inputError}
+            </span>
           )}
         </div>
       )}

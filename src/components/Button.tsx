@@ -3,6 +3,8 @@ type ButtonProps = {
   icon?: string | null;
   variant?: "ghost" | "circle" | "link" | "primary" | "secondary" | "accent";
   size?: "xs" | "sm" | "md" | "lg";
+  hasTextAndIcon?: boolean;
+  iconSize?: string;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export default function Button({
@@ -11,12 +13,18 @@ export default function Button({
   variant = "ghost",
   size = "md",
   color = "primary",
+  className,
+  hasTextAndIcon = false,
+  iconSize = "2xl",
   ...props
 }: ButtonProps) {
   return (
-    <button className={`btn ml-auto btn-${variant} btn-${size}`} {...props}>
-      {icon && <i className={`fa-solid fa-${icon} text-2xl`}></i>}
-      {!icon && title}
+    <button
+      className={`btn ml-auto btn-${variant} btn-${size} ${className}`}
+      {...props}
+    >
+      {icon && <i className={`fa-solid fa-${icon} text-${iconSize}`}></i>}
+      {(!icon || hasTextAndIcon) && title}
     </button>
   );
 }
