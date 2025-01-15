@@ -76,10 +76,10 @@ export const getDocuments = async (
   try {
     store.dispatch(loaderActions.showLoader("Loading documents..."));
 
-    const { data, error } = await supabase
-      .from("documents_with_users")
-      .select("*")
-      .order(orderBy, { ascending: orderBy === "title" });
+    const { data, error } = await supabase.rpc("get_user_documents", {
+      order_by: orderBy,
+      sort_direction: orderBy === "title" ? "ASC" : "DESC",
+    });
 
     store.dispatch(documentActions.setDocuments(data));
 
@@ -104,7 +104,9 @@ export const getDocumentContentById = async (documentId: string) => {
   try {
     const { data, error } = await supabase
       .from("Documents")
-      .select(`*,Contents(content)`)
+      .select(
+        `*,Contents(content),Collaboration:Collaboration!Collaboration_document_id_fkey(*)`
+      )
       .eq("id", documentId)
       .single();
 
