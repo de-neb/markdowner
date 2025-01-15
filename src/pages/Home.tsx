@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 
 import { HOME_CARD_OPTIONS, SORT_ITEMS } from "../constants/Home";
 import { getDocuments, postDocument } from "../client/document";
+import { postCollaborator } from "../client/collaboration";
 import { documentActions } from "../store/slices/document";
 
 import HomeDocument from "../components/HomeDocument";
@@ -60,6 +61,8 @@ export default function Home() {
       owner_id: user.id as string,
     };
     const document = await postDocument(newDocument);
+
+    await postCollaborator(user.email as string, document.id);
     if (document) {
       dispatch(documentActions.setViewingDocument(newDocument));
       navigate(`/editor/${document.id}`);
@@ -92,7 +95,11 @@ export default function Home() {
             {isSearching ? "Results" : "Documents"}
           </h2>
 
-          <Button icon={listView} onClick={toggleListView} />
+          <Button
+            icon={listView}
+            onClick={toggleListView}
+            className="btn-circle"
+          />
 
           <Dropdown
             icon="sort"

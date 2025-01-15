@@ -1,10 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ModalInitialState {
   isVisible: boolean;
   modalOptions: ModalOptions | null;
   isConfirmed: boolean;
   refValue: any | null;
+  isLoading: boolean;
 }
 
 type ModalOptions = {
@@ -12,8 +13,9 @@ type ModalOptions = {
   text: string;
   okText?: string | null;
   cancelText?: string | null;
-  slot: any;
+  slot?: any;
   payload?: any;
+  modalClass?: string;
 };
 
 const initialState: ModalInitialState = {
@@ -21,20 +23,21 @@ const initialState: ModalInitialState = {
   modalOptions: null,
   isConfirmed: false,
   refValue: null,
+  isLoading: false,
 };
 
 const modalSlice = createSlice({
   name: "modal",
   initialState,
   reducers: {
-    showModal(state, action) {
+    showModal(state, action: PayloadAction<ModalOptions>) {
       state.isVisible = true;
       state.modalOptions = action.payload;
     },
     hideModal(state) {
       state.isVisible = false;
     },
-    resetModal(state) {
+    resetModal() {
       return initialState;
     },
     setIsConfirmed(state, action) {
@@ -42,6 +45,9 @@ const modalSlice = createSlice({
     },
     setRefValue(state, action) {
       state.refValue = action.payload;
+    },
+    setIsLoadingModal(state, action) {
+      state.isLoading = action.payload;
     },
   },
 });

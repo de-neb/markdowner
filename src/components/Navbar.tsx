@@ -7,8 +7,10 @@ import { searchDocuments, getDocuments } from "../client/document";
 import { EDIT_ITEMS, FILE_ITEMS, INSERT_ITEMS } from "../constants/Navbar";
 import { navbarActions } from "../store/slices/navbar";
 import { documentActions } from "../store/slices/document";
+import { modalActions } from "../store/slices/modal";
 import { RootState } from "../store";
 import Dropdown from "./Dropdown";
+import Button from "./Button";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -69,8 +71,21 @@ export default function Navbar() {
     dispatch(navbarActions.setNavAction(item));
   };
 
+  const handleOnShare = () => {
+    dispatch(
+      modalActions.showModal({
+        title: `Share "${document.title}"`,
+        text: "",
+        okText: "Ok",
+        slot: "ShareDocument",
+        payload: document.id,
+        modalClass: "!max-w-3xl !h-[400px] !min-h-[400px] !overflow-y-none",
+      })
+    );
+  };
+
   return (
-    <div className="navbar bg-base-100 border border-b-slate-200 sticky h-auto top-0 left-0 z-50">
+    <div className="navbar bg-base-100 border border-b-slate-600  backdrop-filter backdrop-blur-lg sticky h-auto top-0 left-0 z-50">
       <div className="flex-none">
         <a className="btn btn-ghost text-5xl" onClick={() => navigate("/")}>
           <i className="fa-solid fa-hashtag"></i>
@@ -131,6 +146,17 @@ export default function Navbar() {
       )}
 
       <div className="flex-none ml-auto">
+        {isEditorPage && (
+          <Button
+            title="Share"
+            variant="secondary"
+            className="rounded-full mr-3"
+            icon="share"
+            iconSize="md"
+            hasTextAndIcon
+            onClick={handleOnShare}
+          ></Button>
+        )}
         <div className="dropdown dropdown-end">
           <div
             tabIndex={0}

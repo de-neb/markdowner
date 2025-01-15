@@ -108,8 +108,10 @@ export default function HomeDocument({
 
   useEffect(() => {
     const loadPreview = async () => {
-      const file = await stringToMarkdown(props.document!.content);
-      setMarkdownPreview(String(file));
+      if (props.document.content) {
+        const file = await stringToMarkdown(props.document.content);
+        setMarkdownPreview(String(file));
+      }
     };
 
     loadPreview();
@@ -182,7 +184,7 @@ export default function HomeDocument({
 
       {!isCardView && (
         <>
-          <li className=" flex px-3 justify-evenly items-center gap-4 w-full hover:bg-slate-100 hover:cursor-pointer hover:rounded-full">
+          <li className=" flex px-3 justify-evenly items-center gap-4 w-full hover:bg-slate-100 hover:cursor-pointer ">
             <i className="fa-regular fa-file-lines text-2xl text-info"></i>
             <span className="mr-auto w-72 overflow-hidden text-ellipsis">
               {document.title}

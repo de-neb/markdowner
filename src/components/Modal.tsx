@@ -3,38 +3,8 @@ import { modalActions } from "../store/slices/modal";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import Button from "./Button";
-
-// slots
-const SlotRender = ({
-  slot,
-  onValueChange,
-}: {
-  slot: string | null;
-  onValueChange: (value: string) => void;
-}) => {
-  const input = useRef<HTMLInputElement>(null);
-
-  const handleOnInput = () => {
-    if (input.current) {
-      onValueChange(input.current.value);
-    }
-  };
-
-  switch (slot) {
-    case "RenameInput":
-      return (
-        <input
-          type="text"
-          className="input input-bordered input-primary input-sm w-full mt-4"
-          ref={input}
-          onBlur={handleOnInput}
-        />
-      );
-
-    default:
-      return null;
-  }
-};
+import ModalDetails from "./ModalDetails";
+import Loader from "./Loader";
 
 export default function Modal() {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -63,18 +33,24 @@ export default function Modal() {
 
   return (
     <dialog className="modal" ref={dialog}>
-      <div className="modal-box">
-        <h3 className="font-bold text-lg">{modalOptions?.title}</h3>
-        <p className="py-4">
-          {modalOptions?.text}
-          {modalOptions?.slot && (
-            <SlotRender
-              slot={modalOptions.slot}
-              onValueChange={handleOnValueChange}
-            />
-          )}
-        </p>
-        <div className="modal-action mt-2">
+      <div
+        className={`modal-box relative ${modalOptions?.modalClass} p-0 overflow-y-auto`}
+      >
+        <h3 className="font-bold text-lg sticky left-0 top-0 bg-white p-3 z-50">
+          {modalOptions?.title}
+        </h3>
+        <div className="relative min-h-48 z-0">
+          <p className="py-4 px-6">
+            {modalOptions?.text}
+            {modalOptions?.slot && (
+              <ModalDetails
+                slot={modalOptions.slot}
+                onValueChange={handleOnValueChange}
+              />
+            )}
+          </p>
+        </div>
+        <div className="modal-action w-full mt-2 absolute bottom-0 left-0 right-0 bg-white p-3">
           <form method="dialog" className="flex gap-2">
             <Button
               title={modalOptions?.cancelText ?? "Cancel"}
@@ -90,6 +66,8 @@ export default function Modal() {
           </form>
         </div>
       </div>
+
+      <Loader />
     </dialog>
   );
 }

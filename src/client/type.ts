@@ -23,3 +23,18 @@ export interface DocumentContent {
   created_at?: string;
   updated_at?: string;
 }
+
+export interface Collaboration {
+  id: string;
+  document_id: string;
+  role: string;
+  joined_at: string;
+  user_email: string;
+  is_owner: boolean;
+}
+
+export type UpdateCollaboratorRoleParams = {
+  email: string;
+  documentId: string;
+  role: "Editor" | "Viewer";
+};
