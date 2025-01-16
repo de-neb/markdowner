@@ -12,7 +12,7 @@ export default function Loader() {
       {loading ? (
         <div className="absolute top-0 left-0 right-0 flex flex-col justify-center items-center backdrop-blur-md h-screen w-100 bg-white/30 z-[10000]">
           <h2 className="text-2xl">{loadingText}</h2>
-          <span className="loading loading-dots loading-lg"></span>
+          <progress className="progress w-56 rounded-sm"></progress>
         </div>
       ) : null}
     </>
