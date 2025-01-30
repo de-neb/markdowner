@@ -29,7 +29,7 @@ export default function Modal() {
       dialog.current?.close();
       dispatch(modalActions.resetModal());
     }
-  }, [isVisible]);
+  }, [isVisible, dispatch]);
 
   return (
     <dialog className="modal" ref={dialog}>

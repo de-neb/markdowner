@@ -266,10 +266,7 @@ export const removeDocumentById = async (documentId: string) => {
   }
 };
 
-export const getDocumentHistory = async (
-  documentId: string,
-  orderBy?: string
-) => {
+export const getDocumentHistory = async (documentId: string) => {
   try {
     store.dispatch(loaderActions.showLoader("Loading history..."));
 

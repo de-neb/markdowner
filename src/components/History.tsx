@@ -26,7 +26,7 @@ export default function History() {
     if (showDrawer) {
       loadDocumentHistory();
     }
-  }, [showDrawer]);
+  }, [showDrawer, documentId]);
 
   return createPortal(
     <div className="drawer drawer-end z-[100000]">

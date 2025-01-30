@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { navbarActions } from "../store/slices/navbar";
-import { RootState } from "../store";
 
 export default function Tiles() {
   const gridSize = 10;
   const gridItems = Array.from({ length: gridSize * gridSize });
   const [hoveredSize, setHoveredSize] = useState({ rows: 0, cols: 0 });
-  const tableSize = useSelector((state: RootState) => state.navbar.tableSize);
 
   const dispatch = useDispatch();
 

@@ -206,7 +206,7 @@ export default function Editor() {
     } else {
       dispatch(navbarActions.setDisabledActions(["Cut", "Delete"]));
     }
-  }, [hasHighlightedText]);
+  }, [hasHighlightedText, dispatch]);
 
   useEffect(() => {
     switch (navbarAction) {
@@ -259,7 +259,7 @@ export default function Editor() {
         break;
     }
     dispatch(navbarActions.setNavAction(""));
-  }, [navbarAction, user, tableSize]);
+  }, [navbarAction, user, tableSize, content, dispatch, viewingDocument]);
 
   // for controling editor and viewer width
   const [isDragging, setIsDragging] = useState(false);
@@ -306,7 +306,7 @@ export default function Editor() {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging]);
+  }, [isDragging, handleMouseMove]);
 
   const handleEditorValidation = () => {};
 
@@ -319,7 +319,7 @@ export default function Editor() {
       }
     };
     loadDocument();
-  }, [params]);
+  }, [params, handleEditorChange]);
 
   return (
     <div

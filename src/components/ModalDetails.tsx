@@ -159,7 +159,7 @@ export default function ModalDetails(props: ModalDetailsProps) {
     } else {
       dispatch(documentActions.revertOriginalContent());
     }
-  }, [modal, fileContent, user]);
+  }, [modal, fileContent, user, dispatch]);
 
   switch (slot) {
     case "RenameInput":

@@ -14,7 +14,6 @@ export default function Button({
   icon,
   variant = "ghost",
   size = "md",
-  color = "primary",
   className,
   hasTextAndIcon = false,
   iconSize = "2xl",

@@ -4,7 +4,7 @@ import { MarkdownerDocument, History } from "../../client/type";
 interface DocumentInitialState {
   documents: MarkdownerDocument[];
   viewingDocument: MarkdownerDocument;
-  isSearching: Boolean;
+  isSearching: boolean;
   history: History[];
   oldViewingDocumentContent: string | undefined;
 }

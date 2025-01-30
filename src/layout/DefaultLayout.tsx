@@ -13,10 +13,6 @@ export default function DefaultLayout() {
   const session = useSelector((state: RootState) => state.session.session);
   const navigate = useNavigate();
 
-  if (!session?.accessToken) {
-    return <Navigate to="/auth" />;
-  }
-
   const handleSessionTimeout = async () => {
     localStorage.clearItem("loginTime");
     await logout();
@@ -44,7 +40,11 @@ export default function DefaultLayout() {
         };
       }
     }
-  }, [navigate]);
+  }, [navigate, handleSessionTimeout]);
+
+  if (!session?.accessToken) {
+    return <Navigate to="/auth" />;
+  }
 
   return (
     <>

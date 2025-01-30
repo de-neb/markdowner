@@ -1,9 +1,9 @@
 import { useLocation, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 import { logout } from "../client/auth";
-import { searchDocuments, getDocuments } from "../client/document";
+import { searchDocuments } from "../client/document";
 import { EDIT_ITEMS, FILE_ITEMS, INSERT_ITEMS } from "../constants/Navbar";
 import { navbarActions } from "../store/slices/navbar";
 import { documentActions } from "../store/slices/document";
