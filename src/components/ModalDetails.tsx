@@ -9,23 +9,26 @@ import {
   updateCollaboratorRole,
   removeCollaborator,
 } from "../client/collaboration";
+import { insertDocumentContent, postDocument } from "../client/document";
 import Dropdown from "./Dropdown";
 import { collaborationActions } from "../store/slices/collaboration";
 import { Collaboration } from "../client/type";
+import { documentActions } from "../store/slices/document";
+import { modalActions } from "../store/slices/modal";
 
-export default function ModalDetails({
-  slot,
-  onValueChange,
-}: {
-  slot: string | null;
+interface ModalDetailsProps {
+  slot: string;
   onValueChange: (value: string) => void;
-}) {
-  const dispatch = useDispatch();
+}
 
+export default function ModalDetails(props: ModalDetailsProps) {
+  const { slot, onValueChange } = props;
+
+  const dispatch = useDispatch();
   const [selectedRole, setSelectedRole] = useState("");
 
   const modal = useSelector((state: RootState) => state.modal);
-  const documentId = useSelector(
+  const documentId: string = useSelector(
     (state: RootState) => state.document.viewingDocument.id
   ) as string;
   const collaborators = useSelector(
@@ -34,6 +37,7 @@ export default function ModalDetails({
   const collaboratorRoles = useSelector(
     (state: RootState) => state.collaboration.collaboratorRoles
   );
+  const user = useSelector((state: RootState) => state.user.user);
 
   const collaboratorRoleNames = collaboratorRoles?.map((role) => role.name);
 
@@ -97,10 +101,65 @@ export default function ModalDetails({
       await updateCollaboratorRole(collaborators);
     };
 
-    if (modal.isConfirmed) {
+    if (
+      modal.isConfirmed &&
+      collaborators.length &&
+      shareDocumentInputRef.current?.value
+    ) {
       updateRoles();
     }
-  }, [modal, collaborators]);
+  }, [modal, collaborators, shareDocumentInputRef]);
+
+  //   opening file
+  const [fileContent, setFileContent] = useState("");
+
+  const handleOpenFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) {
+      return;
+    }
+
+    const file = event.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      dispatch(modalActions.enableOkBtn(true));
+
+      reader.onload = (e) => {
+        if (e.target) {
+          setFileContent(e.target.result as string);
+        }
+      };
+
+      reader.readAsText(file);
+      return;
+    }
+
+    dispatch(modalActions.enableOkBtn(false));
+  };
+
+  useEffect(() => {
+    const openAndCreateNewDocument = async () => {
+      const newDocument = {
+        title: "Untitled",
+        owner_id: user.id as string,
+      };
+      const document = await postDocument(newDocument);
+      await insertDocumentContent({
+        content: fileContent,
+        document_id: document.id,
+      });
+      if (document) {
+        window.open(`/editor/${document.id}`, "_blank");
+      }
+    };
+
+    if (modal.isConfirmed && fileContent) {
+      openAndCreateNewDocument();
+    } else {
+      dispatch(documentActions.revertOriginalContent());
+    }
+  }, [modal, fileContent, user]);
 
   switch (slot) {
     case "RenameInput":
@@ -165,9 +224,6 @@ export default function ModalDetails({
                       </li>
                     ))}
                     <div className="divider h-2 my-1"></div>
-                    {/* <li>
-                      <span>Transfer Ownership</span>
-                    </li> */}
                     <li onClick={() => removeCollaboration(collaborator.id)}>
                       <span>Remove Access</span>
                     </li>
@@ -179,6 +235,15 @@ export default function ModalDetails({
         </div>
       );
 
+    case "OpenFile":
+      return (
+        <input
+          type="file"
+          className="file-input file-input-bordered file-input-accent w-full"
+          accept=".md"
+          onChange={handleOpenFile}
+        />
+      );
     default:
       return null;
   }

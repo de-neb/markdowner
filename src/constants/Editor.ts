@@ -13,3 +13,14 @@ export const MARKDOWN_SYNTAX = {
   Star: "\n***",
   "Code Block": "`This is a code block.`",
 };
+
+export const USER_COLORS = [
+  "border-red-500",
+  "border-blue-500",
+  "border-green-500",
+  "border-yellow-500",
+  "border-purple-500",
+  "border-pink-500",
+  "border-indigo-500",
+  "border-teal-500",
+];

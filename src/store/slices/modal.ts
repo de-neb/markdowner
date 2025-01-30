@@ -6,6 +6,7 @@ interface ModalInitialState {
   isConfirmed: boolean;
   refValue: any | null;
   isLoading: boolean;
+  enableOkBtn: boolean;
 }
 
 type ModalOptions = {
@@ -24,6 +25,7 @@ const initialState: ModalInitialState = {
   isConfirmed: false,
   refValue: null,
   isLoading: false,
+  enableOkBtn: true,
 };
 
 const modalSlice = createSlice({
@@ -48,6 +50,9 @@ const modalSlice = createSlice({
     },
     setIsLoadingModal(state, action) {
       state.isLoading = action.payload;
+    },
+    enableOkBtn(state, action) {
+      state.enableOkBtn = action.payload;
     },
   },
 });

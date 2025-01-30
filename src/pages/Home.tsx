@@ -4,7 +4,6 @@ import { useNavigate } from "react-router";
 
 import { HOME_CARD_OPTIONS, SORT_ITEMS } from "../constants/Home";
 import { getDocuments, postDocument } from "../client/document";
-import { postCollaborator } from "../client/collaboration";
 import { documentActions } from "../store/slices/document";
 
 import HomeDocument from "../components/HomeDocument";
@@ -59,10 +58,10 @@ export default function Home() {
     const newDocument = {
       title: "Untitled",
       owner_id: user.id as string,
+      // owner_email: user.email as string,
     };
     const document = await postDocument(newDocument);
 
-    await postCollaborator(user.email as string, document.id);
     if (document) {
       dispatch(documentActions.setViewingDocument(newDocument));
       navigate(`/editor/${document.id}`);
@@ -90,7 +89,7 @@ export default function Home() {
   return (
     <>
       <div className="flex h-max justify-items-center flex-col my-10 mx-auto w-5/6">
-        <div className="flex-grow flex justify-between items-center gap-1">
+        <div className="flex-grow flex justify-between items-center gap-1 mb-3">
           <h2 className="font-semibold">
             {isSearching ? "Results" : "Documents"}
           </h2>
@@ -103,6 +102,7 @@ export default function Home() {
 
           <Dropdown
             icon="sort"
+            dropdownClass="dropdown-end"
             items={SORT_ITEMS}
             menuItemClick={handleMenuItemClick}
           />

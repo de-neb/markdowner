@@ -13,8 +13,10 @@ const userSlice = createSlice({
   reducers: {
     setUserInfo(state, action) {
       state.user = action.payload;
+      const loginTime = Date.now();
       localStorage.setItem("user_id", action.payload.id);
       localStorage.setItem("user_email", action.payload.email);
+      localStorage.setItem("loginTime", loginTime.toString());
     },
   },
 });

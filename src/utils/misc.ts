@@ -1,5 +1,7 @@
 // miscelleanous utils
 
+import { USER_COLORS } from "../constants/Editor";
+
 export const generateId = () => {
   return Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
 };
@@ -41,4 +43,40 @@ export const generateMarkdownTable = (tableSize: {
     .split("\n")
     .map((row) => `| ${row} |`)
     .join("\n")}`;
+};
+
+export const downloadMarkdownFile = (filename: string, content: string) => {
+  const blob = new Blob([content], { type: "text/markdown" });
+
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `${filename}.md`;
+
+  document.body.appendChild(link);
+  link.click();
+
+  document.body.removeChild(link);
+};
+
+export const debounce = (func: Function, delay: number) => {
+  let timeoutId: NodeJS.Timeout;
+
+  return (...args: any) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+};
+
+export const getUserColor = (
+  userId: string,
+  userColors: string[] = USER_COLORS
+) => {
+  const index =
+    userId
+      .split("")
+      .map((char) => char.charCodeAt(0))
+      .reduce((acc, curr) => acc + curr, 0) % userColors.length;
+  return userColors[index];
 };

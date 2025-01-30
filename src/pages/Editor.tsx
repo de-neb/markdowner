@@ -13,8 +13,14 @@ import { RootState } from "../store";
 import { navbarActions } from "../store/slices/navbar";
 import { MarkdownerDocument } from "../client/type";
 import { documentActions } from "../store/slices/document";
-import { generateMarkdownTable } from "../utils/misc";
+import {
+  debounce,
+  downloadMarkdownFile,
+  generateMarkdownTable,
+  getUserColor,
+} from "../utils/misc";
 import { MARKDOWN_SYNTAX } from "../constants/Editor";
+import { trackCursorPosition } from "../client/cursor";
 
 export default function Editor() {
   const [parsedValue, setParsedValue] = useState("");
@@ -23,7 +29,9 @@ export default function Editor() {
     false
   );
 
+  const previousDeltaDecorations = useRef<string[]>();
   const monacoEditorRef = useRef<Parameters<OnMount>[0] | null>(null);
+  const monacoInstance = useRef();
   const navbarAction = useSelector((state: RootState) => state.navbar.action);
   const tableSize = useSelector((state: RootState) => state.navbar.tableSize);
   const user = useSelector((state: RootState) => state.user.user);
@@ -33,6 +41,78 @@ export default function Editor() {
   const params = useParams();
   const dispatch = useDispatch();
 
+  const debouncedSetContent = debounce((newContent: string) => {
+    if (content !== newContent) {
+      dispatch(documentActions.setDocumentContent(newContent));
+    }
+  }, 500);
+
+  // get cursor position
+  const trackAndUpdateCursorPosition = async () => {
+    if (!monacoEditorRef.current) {
+      return;
+    }
+
+    const position = monacoEditorRef.current.getPosition();
+
+    const data = {
+      document_id: viewingDocument.id as string,
+      cursor_position: position,
+      typing_state: true,
+      user_id: user.id as string,
+      document_content: content || viewingDocument.content,
+      date: new Date(),
+    };
+
+    const cursorChannel = await trackCursorPosition(data);
+
+    cursorChannel.on(
+      "presence",
+      {
+        event: "sync",
+      },
+      () => {
+        const state = cursorChannel.presenceState();
+
+        const latestState = Object.values(state).flatMap((userState: any) =>
+          userState.filter((item: typeof data) => item.cursor_position)
+        );
+
+        const { document_content } = latestState.reduce((prev, curr) =>
+          new Date(prev.date) > new Date(curr.date) ? prev : curr
+        );
+
+        debouncedSetContent(document_content);
+
+        const selections = Object.values(state).flatMap((userState) =>
+          userState
+            .filter((item: any) => item.cursor_position)
+            .map((item: any) => {
+              const userColorClass = getUserColor(item.user_id);
+              return {
+                range: new monacoInstance.current.Range(
+                  item.cursor_position.lineNumber,
+                  item.cursor_position.column,
+                  item.cursor_position.lineNumber,
+                  item.cursor_position.column
+                ),
+                options: {
+                  className: `absolute border-l-2 ${userColorClass}`,
+                  isWholeLine: false,
+                },
+              };
+            })
+        );
+
+        previousDeltaDecorations.current =
+          monacoEditorRef.current?.deltaDecorations(
+            previousDeltaDecorations.current || [],
+            selections
+          );
+      }
+    );
+  };
+
   const handleEditorChange = async (value: string | undefined) => {
     if (!value) {
       return;
@@ -40,10 +120,12 @@ export default function Editor() {
     setContent(value);
     const file = await remark().use(html).use(remarkGfm).process(`${value}`);
     setParsedValue(String(file));
+    trackAndUpdateCursorPosition();
   };
 
-  const handleEditorDidMount: OnMount = (editor) => {
+  const handleEditorDidMount: OnMount = (editor, monaco) => {
     monacoEditorRef.current = editor;
+    monacoInstance.current = monaco;
     handleEditorChange(editor.getValue());
 
     editor.onDidChangeCursorSelection(() => {
@@ -161,6 +243,12 @@ export default function Editor() {
         const markdownTableText = generateMarkdownTable(tableSize);
         insertTextAtCursor(markdownTableText);
         break;
+      case "Download":
+        downloadMarkdownFile(
+          viewingDocument.title,
+          viewingDocument.content as string
+        );
+        break;
       default:
         if (Object.keys(MARKDOWN_SYNTAX).includes(navbarAction)) {
           insertTextAtCursor(
@@ -222,13 +310,14 @@ export default function Editor() {
 
   const handleEditorValidation = () => {};
 
-  // on mounted
+  // on mounted load document and track cursor position
   useEffect(() => {
     const loadDocument = async () => {
       const data = await getDocumentContentById(params.documentId as string);
-      handleEditorChange(data.content);
+      if (data) {
+        handleEditorChange(data?.content || "");
+      }
     };
-
     loadDocument();
   }, [params]);
 
@@ -244,11 +333,12 @@ export default function Editor() {
         onChange={handleEditorChange}
         onMount={handleEditorDidMount}
         onValidate={handleEditorValidation}
-        value={viewingDocument?.Contents?.content}
+        value={viewingDocument.content}
         defaultLanguage="markdown"
         defaultValue="# Hello Markdown"
         className="min-h-full"
       />
+
       <div
         ref={divider}
         className="bg-slate-300 cursor-ew-resize w-2"

@@ -8,6 +8,7 @@ import sessionReducer from "./slices/session";
 import userReducer from "./slices/user";
 import documentReducer from "./slices/document";
 import collaborationReducer from "./slices/collaboration";
+import drawerReducer from "./slices/drawer";
 
 const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ const store = configureStore({
     document: documentReducer,
     modal: modalReducer,
     collaboration: collaborationReducer,
+    drawer: drawerReducer,
   },
 });
 
