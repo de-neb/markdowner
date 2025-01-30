@@ -22,7 +22,7 @@ export default function DefaultLayout() {
   useEffect(() => {
     const loginTime = localStorage.getItem("loginTime");
     const currentTime = Date.now();
-    const sessionDuration = 1 * 10 * 1000;
+    const sessionDuration = 15 * 60 * 1000;
 
     if (loginTime) {
       const timeElapsed = currentTime - parseInt(loginTime);

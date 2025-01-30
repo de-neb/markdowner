@@ -60,9 +60,12 @@ export default function AuthForm() {
     <fetcher.Form
       ref={form}
       onSubmit={handleSubmit}
-      className="flex flex-col gap-4 w-full max-w-sm border-black bg-white border p-7"
+      className="flex flex-col gap-4 w-full max-w-sm border-black bg-white border p-7 transition duration-300 hover:shadow-[5px_5px_0]"
     >
-      <h1 className="text-center text-2xl font-bold">
+      <h1 className="font-mono text-2xl text-center font-semibold">
+        #Markdowner
+      </h1>
+      <h1 className="text-center text-xl ">
         {isModeSignup ? "Sign Up" : "Login"}
       </h1>
       <label className="input input-bordered input-base-100 flex items-center gap-2 rounded-sm">

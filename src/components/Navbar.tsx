@@ -107,6 +107,9 @@ export default function Navbar() {
         <div className="flex-none">
           <a className="btn btn-ghost text-5xl" onClick={() => navigate("/")}>
             <i className="fa-solid fa-hashtag"></i>
+            {!isEditorPage && (
+              <span className="text-[20px] font-mono">Markdowner</span>
+            )}
           </a>
         </div>
 

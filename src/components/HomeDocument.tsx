@@ -120,7 +120,7 @@ export default function HomeDocument({
   return (
     <>
       {isCardView && (
-        <div className="card card-compact rounded-sm hover:shadow-[5px_5px_0] bg-base-100 w-56 !max-h-72 !min-h-72 divide-y-2  shadow-sm border border-slate-300 hover:border-primary hover:cursor-pointer">
+        <div className="card card-compact transition duration-300 rounded-sm hover:shadow-[5px_5px_0] bg-base-100 w-56 !max-h-72 !min-h-72 divide-y-2  shadow-sm border border-slate-300 hover:border-primary hover:cursor-pointer">
           <div style={{ width: "200px", height: "150px", overflow: "hidden" }}>
             <svg viewBox="0 0 800 600" width="200" height="150">
               <foreignObject width="100%" height="100%">
