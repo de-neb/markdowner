@@ -1,15 +1,18 @@
+import supabase from "./index";
+import store from "../store";
 import { toastActions } from "../store/slices/toast";
 import { loaderActions } from "../store/slices/loader";
 import { collaborationActions } from "../store/slices/collaboration";
-import supabase from "./index";
-import store from "../store";
-import { Collaboration, UpdateCollaboratorRoleParams } from "./type";
+import { Collaboration } from "./type";
 
 export const postCollaborator = async (email: string, documentId: string) => {
   try {
+    const isOwner = store.getState().user.user.email === email;
     const { data, error } = await supabase
       .from("Collaboration")
-      .insert([{ user_email: email, document_id: documentId }]) // role is editor by default
+      .insert([
+        { user_email: email, document_id: documentId, is_owner: isOwner },
+      ]) // role is editor by default
       .select()
       .single();
 
@@ -33,6 +36,10 @@ export const postCollaborator = async (email: string, documentId: string) => {
 };
 
 export const getCollaborators = async (documentId: string) => {
+  if (!documentId) {
+    return;
+  }
+
   try {
     const { data, error } = await supabase
       .from("Collaboration")

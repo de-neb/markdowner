@@ -7,7 +7,7 @@ export interface MarkdownerDocument {
   id?: string;
   title: string;
   owner_id: string;
-  owner_email: string;
+  owner_email?: string;
   created_at?: string;
   updated_at?: string;
   is_public?: boolean;
@@ -38,3 +38,29 @@ export type UpdateCollaboratorRoleParams = {
   documentId: string;
   role: "Editor" | "Viewer";
 };
+
+export interface History {
+  id: string;
+  document_id: string;
+  user_id: string;
+  action_timestamp: string;
+  action: string;
+  changes: {
+    new_data: MarkdownerDocument;
+    old_data: MarkdownerDocument;
+  };
+}
+
+export type CursorPosition = {
+  column: number;
+  lineNumber: number;
+};
+
+export interface CollaborationState {
+  id?: string;
+  user_id?: string;
+  updated_at?: string;
+  document_id: string;
+  cursor_position: CursorPosition | null;
+  typing_state: boolean;
+}

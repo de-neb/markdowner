@@ -1,10 +1,10 @@
+import supabase from "./index";
+import store from "../store";
 import { SignupData } from "./type";
 import { toastActions } from "../store/slices/toast";
 import { loaderActions } from "../store/slices/loader";
 import { userActions } from "../store/slices/user";
 import { sessionActions } from "../store/slices/session";
-import supabase from "./index";
-import store from "../store";
 
 export const signUp = async (payload: SignupData) => {
   try {

@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { MarkdownerDocument } from "../../client/type";
+import { MarkdownerDocument, History } from "../../client/type";
 
 interface DocumentInitialState {
   documents: MarkdownerDocument[];
   viewingDocument: MarkdownerDocument;
   isSearching: Boolean;
+  history: History[];
+  oldViewingDocumentContent: string | undefined;
 }
 
 const initialState: DocumentInitialState = {
@@ -14,7 +16,9 @@ const initialState: DocumentInitialState = {
     owner_id: "",
     owner_email: "",
   },
+  oldViewingDocumentContent: "",
   isSearching: false,
+  history: [],
 };
 
 const documentSlice = createSlice({
@@ -26,9 +30,26 @@ const documentSlice = createSlice({
     },
     setViewingDocument(state, action) {
       state.viewingDocument = action.payload;
+      state.oldViewingDocumentContent = state.viewingDocument.content;
     },
     setIsSearching(state, action) {
       state.isSearching = action.payload;
+    },
+    setDocumentHistory(state, action) {
+      state.history = action.payload;
+    },
+    setDocumentContent(state, action) {
+      state.oldViewingDocumentContent = state.viewingDocument.content;
+      state.viewingDocument = {
+        ...state.viewingDocument,
+        content: action.payload,
+      };
+    },
+    revertOriginalContent(state) {
+      state.viewingDocument = {
+        ...state.viewingDocument,
+        content: state.oldViewingDocumentContent,
+      };
     },
   },
 });

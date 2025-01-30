@@ -1,8 +1,10 @@
+import supabase from "./index";
+import store from "../store";
 import { toastActions } from "../store/slices/toast";
 import { loaderActions } from "../store/slices/loader";
 import { documentActions } from "../store/slices/document";
-import supabase from "./index";
-import store from "../store";
+import { postCollaborator } from "./collaboration";
+import { postCursorLocation } from "./cursor";
 import { DocumentContent, MarkdownerDocument } from "./type";
 
 export const postDocument = async (document: MarkdownerDocument) => {
@@ -13,6 +15,19 @@ export const postDocument = async (document: MarkdownerDocument) => {
       .insert([{ ...document }])
       .select()
       .single();
+
+    // post collaborators and cursor location
+    const userEmail = store.getState().user.user.email as string;
+    const cursorData = {
+      document_id: data.id as string,
+      typing_state: true,
+      cursor_position: {
+        column: 1,
+        lineNumber: 1,
+      },
+    };
+    await postCollaborator(userEmail, data.id as string);
+    await postCursorLocation(cursorData);
 
     if (error) {
       throw error;
@@ -104,11 +119,13 @@ export const getDocumentContentById = async (documentId: string) => {
   try {
     const { data, error } = await supabase
       .from("Documents")
-      .select(
-        `*,Contents(content),Collaboration:Collaboration!Collaboration_document_id_fkey(*)`
-      )
+      .select(`*,Contents(content)`)
       .eq("id", documentId)
       .single();
+
+    if ("Contents" in data && data.Contents) {
+      data.content = data.Contents.content ?? "";
+    }
 
     const { error: updateAccessError } = await supabase.rpc("access_document", {
       doc_id: documentId,
@@ -237,6 +254,38 @@ export const removeDocumentById = async (documentId: string) => {
     if (error) {
       throw error;
     }
+  } catch (error: any) {
+    store.dispatch(
+      toastActions.show({
+        message: error.message,
+        type: "error",
+      })
+    );
+  } finally {
+    store.dispatch(loaderActions.hideLoader());
+  }
+};
+
+export const getDocumentHistory = async (
+  documentId: string,
+  orderBy?: string
+) => {
+  try {
+    store.dispatch(loaderActions.showLoader("Loading history..."));
+
+    const { data, error } = await supabase
+      .from("Document History")
+      .select("*")
+      .eq("document_id", documentId)
+      .order("action_timestamp", { ascending: false });
+
+    store.dispatch(documentActions.setDocumentHistory(data));
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
   } catch (error: any) {
     store.dispatch(
       toastActions.show({
