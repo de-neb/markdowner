@@ -8,7 +8,7 @@ import Loader from "./Loader";
 
 export default function Modal() {
   const dialog = useRef<HTMLDialogElement>(null);
-  const { isVisible, modalOptions } = useSelector(
+  const { isVisible, modalOptions, enableOkBtn } = useSelector(
     (state: RootState) => state.modal
   );
   const dispatch = useDispatch();
@@ -61,6 +61,7 @@ export default function Modal() {
                 title={modalOptions?.okText ?? "Ok"}
                 variant="primary"
                 onClick={() => handleClose(true)}
+                disabled={!enableOkBtn}
               />
             )}
           </form>

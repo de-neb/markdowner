@@ -35,7 +35,7 @@ export default function Dropdown({
 }: DropdownProps) {
   const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
 
-  const customActivatorButtonClass = `btn btn-ghost m-1 ${
+  const customActivatorButtonClass = `btn btn-ghost hover:shadow-[5px_5px_0] m-1 ${
     icon ? "btn-circle" : ""
   } ${activatorClass}`;
 
@@ -48,7 +48,7 @@ export default function Dropdown({
   };
 
   return (
-    <div className={`dropdown dropdown-bottom relative ${dropdownClass}`}>
+    <div className={`dropdown dropdown-bottom   relative ${dropdownClass}`}>
       <div
         tabIndex={0}
         role="button"
@@ -60,7 +60,7 @@ export default function Dropdown({
       </div>
       <ul
         tabIndex={0}
-        className={`dropdown-content menu bg-base-100 z-[1] w-52 p-0 shadow [&_li>*]:rounded-none ${menuClass}`}
+        className={`dropdown-content menu bg-base-100 shadow  z-[1] w-52 p-0  [&_li>*]:rounded-none ${menuClass}`}
       >
         {children && children}
         {items &&
