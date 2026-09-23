@@ -1,50 +1,47 @@
-# React + TypeScript + Vite
+# Markdowner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Markdown editing application built with React, TypeScript, and Vite. The project combines a code-editor-style writing experience with Markdown rendering, document history, file operations, and Supabase-backed data features.
 
-Currently, two official plugins are available:
+## Highlights
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Edit Markdown using Monaco Editor
+- Render Markdown with GitHub-flavored Markdown support
+- Open and download document content
+- Maintain document history
+- Support real-time content updates
+- Sanitize rendered HTML before display
+- Manage application state with Redux Toolkit
+- Integrate Supabase for backend and real-time functionality
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- React
+- TypeScript
+- Vite
+- Redux Toolkit
+- React Router
+- Supabase
+- Monaco Editor
+- Tailwind CSS / DaisyUI
+- Remark / Rehype
 
-- Configure the top-level `parserOptions` property like this:
+## Running Locally
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+git clone https://github.com/de-neb/markdowner.git
+cd markdowner
+npm install
+npm run dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Build
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+```bash
+npm run build
+```
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+## Lint
+
+```bash
+npm run lint
 ```
