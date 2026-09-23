@@ -114,12 +114,14 @@ export default function Dropdown({
               >
                 <a
                   className={
-                    disabledActions.includes(item.title)
+                    disabledActions.includes(typeof item === "string" ? item : item.title)
                       ? "pointer-events-none text-slate-400"
                       : ""
                   }
                 >
-                  {item.icon && <i className={`fa-solid fa-${item.icon}`}></i>}
+                  {typeof item !== "string" && item.icon && (
+                    <i className={`fa-solid fa-${item.icon}`}></i>
+                  )}
                   {typeof item === "string" ? item : item.title}
                 </a>
               </li>
