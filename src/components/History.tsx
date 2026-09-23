@@ -72,6 +72,6 @@ export default function History() {
         </ul>
       </div>
     </div>,
-    document.getElementById("root")
+    document.getElementById("root")!
   );
 }
