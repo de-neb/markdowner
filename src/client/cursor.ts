@@ -4,7 +4,7 @@ import { toastActions } from "../store/slices/toast";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { CollaborationState } from "./type";
 
-export const trackCursorPosition = async (payload: any): RealtimeChannel => {
+export const trackCursorPosition = async (payload: any): Promise<RealtimeChannel> => {
   const channel = supabase.channel("document-collab-channel");
 
   channel.subscribe();
