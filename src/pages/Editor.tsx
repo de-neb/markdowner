@@ -4,6 +4,7 @@ import { remark } from "remark";
 import { useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import MonacoEditor, { OnMount } from "@monaco-editor/react";
+import type * as Monaco from "monaco-editor";
 import html from "remark-html";
 import remarkGfm from "remark-gfm";
 
@@ -31,7 +32,7 @@ export default function Editor() {
 
   const previousDeltaDecorations = useRef<string[]>();
   const monacoEditorRef = useRef<Parameters<OnMount>[0] | null>(null);
-  const monacoInstance = useRef();
+  const monacoInstance = useRef<typeof Monaco | null>(null);
   const navbarAction = useSelector((state: RootState) => state.navbar.action);
   const tableSize = useSelector((state: RootState) => state.navbar.tableSize);
   const user = useSelector((state: RootState) => state.user.user);
@@ -84,13 +85,16 @@ export default function Editor() {
 
         debouncedSetContent(document_content);
 
+        const monaco = monacoInstance.current;
+        if (!monaco) return;
+
         const selections = Object.values(state).flatMap((userState) =>
           userState
             .filter((item: any) => item.cursor_position)
             .map((item: any) => {
               const userColorClass = getUserColor(item.user_id);
               return {
-                range: new monacoInstance.current.Range(
+                range: new monaco.Range(
                   item.cursor_position.lineNumber,
                   item.cursor_position.column,
                   item.cursor_position.lineNumber,
@@ -327,7 +331,6 @@ export default function Editor() {
       className="flex flex-nowrap min-h-full w-full max-w-screen no-scrollbar"
     >
       <MonacoEditor
-        ref={monacoEditorRef}
         height="100vh"
         width={editorWidth}
         onChange={handleEditorChange}
