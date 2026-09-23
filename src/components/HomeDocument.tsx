@@ -125,7 +125,6 @@ export default function HomeDocument({
             <svg viewBox="0 0 800 600" width="200" height="150">
               <foreignObject width="100%" height="100%">
                 <div
-                  xmlns="http://www.w3.org/1999/xhtml"
                   className="markdown-body !text-3xl p-10"
                   dangerouslySetInnerHTML={{ __html: markdownPreview }}
                 ></div>
