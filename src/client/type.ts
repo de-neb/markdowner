@@ -43,6 +43,7 @@ export interface History {
   id: string;
   document_id: string;
   user_id: string;
+  user_email?: string;
   action_timestamp: string;
   action: string;
   changes: {
