@@ -190,7 +190,7 @@ export const insertDocumentContent = async (
   try {
     const { data, error } = await supabase
       .from("Contents")
-      .upsert([{ ...documentContent }], { onConflict: ["document_id"] })
+      .upsert([{ ...documentContent }], { onConflict: "document_id" })
       .select()
       .single();
 
