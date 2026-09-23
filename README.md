@@ -1,47 +1,27 @@
 # Markdowner
 
-A Markdown editing application built with React, TypeScript, and Vite. The project combines a code-editor-style writing experience with Markdown rendering, document history, file operations, and Supabase-backed data features.
+A markdown editor built with React, TypeScript, and Vite.
 
-## Highlights
+## About The Project
 
-- Edit Markdown using Monaco Editor
-- Render Markdown with GitHub-flavored Markdown support
-- Open and download document content
-- Maintain document history
-- Support real-time content updates
-- Sanitize rendered HTML before display
-- Manage application state with Redux Toolkit
-- Integrate Supabase for backend and real-time functionality
+This project was made to practice React and TypeScript. It uses Monaco Editor for editing markdown and Supabase for storing data and real-time updates.
 
-## Tech Stack
+Some of the features include document history, opening and downloading files, and rendering markdown content.
+
+## Built With
 
 - React
 - TypeScript
 - Vite
 - Redux Toolkit
-- React Router
 - Supabase
 - Monaco Editor
-- Tailwind CSS / DaisyUI
-- Remark / Rehype
+- Tailwind CSS
+- DaisyUI
 
-## Running Locally
+## Project Setup
 
 ```bash
-git clone https://github.com/de-neb/markdowner.git
-cd markdowner
 npm install
 npm run dev
-```
-
-## Build
-
-```bash
-npm run build
-```
-
-## Lint
-
-```bash
-npm run lint
 ```
