@@ -7,8 +7,18 @@ interface Collaborator {
   document_id: string;
 }
 
-const initialState = {
-  collaborators: <Collaborator[]>[],
+interface CollaboratorRole {
+  id: number;
+  name: string;
+}
+
+interface CollaborationState {
+  collaborators: Collaborator[];
+  collaboratorRoles: CollaboratorRole[];
+}
+
+const initialState: CollaborationState = {
+  collaborators: [],
   collaboratorRoles: [],
 };
 
