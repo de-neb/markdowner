@@ -1,6 +1,37 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes:
+    lemonade --default,
+    forest --prefersdark;
+}
+
+:root {
+  --app-bg: var(--color-base-200);
+  --app-surface: var(--color-base-100);
+  --app-surface-strong: var(--color-base-300);
+  --app-border: color-mix(in srgb, var(--color-base-content) 16%, transparent);
+  --app-text: var(--color-base-content);
+  --app-text-soft: color-mix(
+    in srgb,
+    var(--color-base-content) 78%,
+    transparent
+  );
+  --app-muted: color-mix(in srgb, var(--color-base-content) 58%, transparent);
+  --app-card-shadow: color-mix(in srgb, var(--color-neutral) 18%, transparent);
+  --app-primary: var(--color-primary);
+  --app-secondary: var(--color-secondary);
+  --app-accent: var(--color-accent);
+  --app-loading-overlay: color-mix(
+    in srgb,
+    var(--color-neutral) 62%,
+    transparent
+  );
+  --app-loading-surface: color-mix(
+    in srgb,
+    var(--color-base-100) 94%,
+    transparent
+  );
+}
 
 * {
   box-sizing: border-box;
@@ -15,9 +46,148 @@ body,
   overflow-x: hidden;
   margin: 0;
   padding: 0;
+  background: var(--app-bg);
+  color: var(--app-text);
+}
+
+body {
+  background: var(--app-bg);
+}
+
+#root {
+  background: var(--app-bg);
+}
+
+.markdown-body {
+  background: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.markdown-body pre,
+.markdown-body code,
+.markdown-body table,
+.markdown-body th,
+.markdown-body td,
+.markdown-body blockquote,
+.markdown-body hr {
+  border-color: var(--app-border) !important;
+}
+
+button,
+.btn,
+.link,
+.menu a,
+.dropdown-content a,
+.card,
+input,
+textarea,
+select {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.btn:hover,
+.link:hover,
+.menu a:hover,
+.dropdown-content a:hover,
+.card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px var(--app-card-shadow);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--app-primary) 32%, transparent);
+}
+
+a {
+  color: inherit;
 }
 
 .auth-bg {
   background: url("/src/assets/markdown-bg.png") repeat center center fixed;
   background-size: contain;
+}
+
+.auth-page {
+  background:
+    radial-gradient(
+      ellipse at 14% 18%,
+      color-mix(in srgb, var(--color-primary) 25%, transparent),
+      transparent 46%
+    ),
+    radial-gradient(
+      ellipse at 86% 82%,
+      color-mix(in srgb, var(--color-accent) 20%, transparent),
+      transparent 44%
+    ),
+    var(--color-base-200);
+}
+
+.auth-card,
+.auth-field {
+  background-color: color-mix(
+    in srgb,
+    var(--color-base-100) 78%,
+    var(--color-primary) 22%
+  );
+}
+
+.editor-workspace {
+  height: calc(100dvh - 4.6875rem);
+  min-height: 0;
+}
+
+.loader-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: var(--app-loading-overlay);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+}
+
+.loader-panel {
+  display: flex;
+  width: min(28rem, calc(100vw - 2rem));
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  padding: 1.75rem 1.5rem;
+  border-radius: 1.5rem;
+  border: 1px solid var(--app-border);
+  background: var(--app-loading-surface);
+  box-shadow: 0 22px 60px var(--app-card-shadow);
+}
+
+.loader-spinner {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  border: 3px solid color-mix(in srgb, var(--app-primary) 24%, transparent);
+  border-top-color: var(--app-primary);
+  animation: loader-spin 0.9s linear infinite;
+}
+
+.loader-text {
+  margin: 0;
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--app-text);
+  text-align: center;
+}
+
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

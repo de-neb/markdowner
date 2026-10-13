@@ -62,7 +62,7 @@ export default function HomeDocument({
             text: `${document.title} will be permanently removed.`,
             okText: "Remove file",
             payload: document.id,
-          })
+          }),
         );
         break;
       case "Rename":
@@ -73,7 +73,7 @@ export default function HomeDocument({
             okText: "Ok",
             slot: "RenameInput",
             payload: document.id,
-          })
+          }),
         );
         break;
       default:
@@ -120,7 +120,7 @@ export default function HomeDocument({
   return (
     <>
       {isCardView && (
-        <div className="card card-compact transition duration-300 rounded-sm hover:shadow-[5px_5px_0] bg-base-100 w-56 !max-h-72 !min-h-72 divide-y-2  shadow-sm border border-slate-300 hover:border-primary hover:cursor-pointer">
+        <div className="card card-compact w-56 rounded-sm border border-slate-300 bg-base-100 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:cursor-pointer hover:border-primary hover:shadow-lg hover:shadow-slate-900/15 !max-h-72 !min-h-72 divide-y-2">
           <div style={{ width: "200px", height: "150px", overflow: "hidden" }}>
             <svg viewBox="0 0 800 600" width="200" height="150">
               <foreignObject width="100%" height="100%">
@@ -146,7 +146,10 @@ export default function HomeDocument({
                 </span>
 
                 {options && options.length > 0 ? (
-                  <div className="dropdown relative">
+                  <div
+                    className="dropdown relative"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <button
                       tabIndex={0}
                       role="button"
@@ -158,13 +161,15 @@ export default function HomeDocument({
                     <ul
                       tabIndex={0}
                       className="absolute top-full left-[50%] translate-x-[-50%] dropdown-content menu bg-base-100 z-[1] w-52 p-0 shadow-lg [&_li>*]:rounded-none"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       {options?.map((option) => (
                         <li
                           key={option.title}
-                          onClick={(e: React.MouseEvent) =>
-                            handleOptionClick(e, option.title)
-                          }
+                          onClick={(e: React.MouseEvent) => {
+                            e.stopPropagation();
+                            handleOptionClick(e, option.title);
+                          }}
                         >
                           <a>
                             <i className={`fa-solid ${option.icon}`}></i>{" "}
@@ -191,7 +196,10 @@ export default function HomeDocument({
             <span className="mr-auto">{document.owner_email}</span>
             <span>{formatDate(document.created_at as string)}</span>
             {options && options.length > 0 ? (
-              <div className="dropdown relative">
+              <div
+                className="dropdown relative"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <button
                   tabIndex={0}
                   role="button"
@@ -203,13 +211,15 @@ export default function HomeDocument({
                 <ul
                   tabIndex={0}
                   className="absolute top-full left-[50%] translate-x-[-50%] dropdown-content menu bg-base-100 z-[1] w-52 p-0 shadow-lg [&_li>*]:rounded-none"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   {options?.map((option) => (
                     <li
                       key={option.title}
-                      onClick={(e: React.MouseEvent) =>
-                        handleOptionClick(e, option.title)
-                      }
+                      onClick={(e: React.MouseEvent) => {
+                        e.stopPropagation();
+                        handleOptionClick(e, option.title);
+                      }}
                     >
                       <a>
                         <i className={`fa-solid ${option.icon}`}></i>{" "}

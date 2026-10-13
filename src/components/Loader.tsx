@@ -4,15 +4,23 @@ import { useSelector } from "react-redux";
 export default function Loader() {
   const loading = useSelector((state: RootState) => state.loader.loading);
   const loadingText = useSelector(
-    (state: RootState) => state.loader.loadingText
+    (state: RootState) => state.loader.loadingText,
   );
 
   return (
     <>
       {loading ? (
-        <div className="absolute top-0 left-0 right-0 flex flex-col justify-center items-center backdrop-blur-md h-screen w-100 bg-white/30 z-[10000]">
-          <h2 className="text-2xl">{loadingText}</h2>
-          <progress className="progress w-56 rounded-sm"></progress>
+        <div
+          className="loader-backdrop"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <div className="loader-panel">
+            <span className="loader-spinner" aria-hidden="true" />
+            <h2 className="loader-text">{loadingText}</h2>
+            <progress className="progress progress-primary w-64 rounded-full"></progress>
+          </div>
         </div>
       ) : null}
     </>

@@ -12,11 +12,11 @@ export const formatDate = (
     month: "short",
     day: "numeric",
     year: "numeric",
-  }
+  },
 ) => {
   const parsedDate = new Date(date);
   const formattedDate = new Intl.DateTimeFormat("en-US", options).format(
-    parsedDate
+    parsedDate,
   );
   return formattedDate;
 };
@@ -28,15 +28,15 @@ export const generateMarkdownTable = (tableSize: {
   const { rows, cols } = tableSize;
   const headerRow = Array.from(
     { length: cols },
-    (_, index) => `Header ${index + 1}`
+    (_, index) => `Header ${index + 1}`,
   ).join(" | ");
   const separatorRow = Array.from({ length: cols }, () => "---").join(" | ");
 
   const contentRows = Array.from({ length: rows }, (_, rowIndex) =>
     Array.from(
       { length: cols },
-      (_, colIndex) => `R${rowIndex + 1}C${colIndex + 1}`
-    ).join(" | ")
+      (_, colIndex) => `R${rowIndex + 1}C${colIndex + 1}`,
+    ).join(" | "),
   ).join("\n");
 
   return `| ${headerRow} |\n| ${separatorRow} |\n${contentRows
@@ -59,7 +59,7 @@ export const downloadMarkdownFile = (filename: string, content: string) => {
 };
 
 export const debounce = (func: Function, delay: number) => {
-  let timeoutId: NodeJS.Timeout;
+  let timeoutId: ReturnType<typeof setTimeout>;
 
   return (...args: any) => {
     clearTimeout(timeoutId);
@@ -71,7 +71,7 @@ export const debounce = (func: Function, delay: number) => {
 
 export const getUserColor = (
   userId: string,
-  userColors: string[] = USER_COLORS
+  userColors: string[] = USER_COLORS,
 ) => {
   const index =
     userId

@@ -1,11 +1,23 @@
 <!doctype html>
-<html lang="en" data-theme="lemonade">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Markdowner</title>
-    <link href="./output.css" rel="stylesheet">
+    <script>
+      (() => {
+        const savedTheme = localStorage.getItem("theme");
+        const theme =
+          savedTheme === "lemonade" || savedTheme === "light"
+            ? "lemonade"
+            : "forest";
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.style.colorScheme =
+          theme === "forest" ? "dark" : "light";
+        localStorage.setItem("theme", theme);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -9,7 +9,7 @@ import Loader from "./Loader";
 export default function Modal() {
   const dialog = useRef<HTMLDialogElement>(null);
   const { isVisible, modalOptions, enableOkBtn } = useSelector(
-    (state: RootState) => state.modal
+    (state: RootState) => state.modal,
   );
   const dispatch = useDispatch();
 
@@ -34,13 +34,13 @@ export default function Modal() {
   return (
     <dialog className="modal" ref={dialog}>
       <div
-        className={`modal-box relative ${modalOptions?.modalClass} p-0 overflow-y-auto`}
+        className={`modal-box relative ${modalOptions?.modalClass} overflow-y-auto border border-base-300 bg-base-100 p-0 text-base-content shadow-2xl`}
       >
-        <h3 className="font-bold text-lg sticky left-0 top-0 bg-white p-3 z-50">
+        <h3 className="sticky left-0 top-0 z-50 bg-base-100 p-3 text-lg font-bold text-base-content">
           {modalOptions?.title}
         </h3>
-        <div className="relative min-h-48 z-0">
-          <p className="py-4 px-6">
+        <div className="relative z-0 min-h-48">
+          <p className="px-6 py-4 text-base-content">
             {modalOptions?.text}
             {modalOptions?.slot && (
               <ModalDetails
@@ -50,7 +50,7 @@ export default function Modal() {
             )}
           </p>
         </div>
-        <div className="modal-action w-full mt-2 absolute bottom-0 left-0 right-0 bg-white p-3">
+        <div className="modal-action absolute bottom-0 left-0 right-0 z-10 mt-2 w-full border-t border-base-300 bg-base-200/90 p-3 text-base-content backdrop-blur-sm">
           <form method="dialog" className="flex gap-2">
             <Button
               title={modalOptions?.cancelText ?? "Cancel"}

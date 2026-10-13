@@ -29,13 +29,13 @@ export default function ModalDetails(props: ModalDetailsProps) {
 
   const modal = useSelector((state: RootState) => state.modal);
   const documentId: string = useSelector(
-    (state: RootState) => state.document.viewingDocument.id
+    (state: RootState) => state.document.viewingDocument.id,
   ) as string;
   const collaborators = useSelector(
-    (state: RootState) => state.collaboration.collaborators
+    (state: RootState) => state.collaboration.collaborators,
   ) as Collaboration[];
   const collaboratorRoles = useSelector(
-    (state: RootState) => state.collaboration.collaboratorRoles
+    (state: RootState) => state.collaboration.collaboratorRoles,
   );
   const user = useSelector((state: RootState) => state.user.user);
 
@@ -53,7 +53,7 @@ export default function ModalDetails(props: ModalDetailsProps) {
   const handleDropdownClick = () => {};
 
   const addCollaborator = async (
-    event: React.KeyboardEvent<HTMLInputElement>
+    event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (
       event.key === "Enter" &&
@@ -61,7 +61,7 @@ export default function ModalDetails(props: ModalDetailsProps) {
     ) {
       await postCollaborator(
         shareDocumentInputRef.current.value,
-        documentId as string
+        documentId as string,
       );
 
       await getCollaborators(documentId);
@@ -78,7 +78,7 @@ export default function ModalDetails(props: ModalDetailsProps) {
       collaborationActions.updateCollaboratorRole({
         id,
         role,
-      })
+      }),
     );
   };
 
@@ -175,27 +175,27 @@ export default function ModalDetails(props: ModalDetailsProps) {
     case "ShareDocument":
       return (
         <div className="flex flex-col gap-3">
-          <label className="input input-bordered input-primary input-md flex justify-between items-center">
+          <div className="input input-bordered input-primary input-md flex justify-between items-center gap-2">
             <input
               required
               type="email"
               placeholder="Type email address and press enter to add..."
-              className="w-full invalid:border-red-500"
+              className="w-full border-0 bg-transparent p-0 shadow-none outline-none invalid:border-red-500 focus:outline-none"
               ref={shareDocumentInputRef}
               onKeyDown={addCollaborator}
             />
             <kbd className="kbd kbd-sm">Enter</kbd>
-          </label>
+          </div>
           <h2 className="font-semibold text-md">People with access</h2>
           <ul className="flex flex-col gap-2">
             {collaborators?.map((collaborator) => (
               <li
-                className="flex justify-between items-center hover:bg-slate-200"
+                className="flex items-center justify-between rounded-md px-2 py-1 hover:bg-base-200"
                 key={collaborator.id}
               >
                 <span>{collaborator.user_email}</span>
                 {collaborator.is_owner && (
-                  <span className="text-slate-300 p-2">Owner</span>
+                  <span className="p-2 text-slate-400">Owner</span>
                 )}
                 {!collaborator.is_owner && (
                   <Dropdown
@@ -207,7 +207,7 @@ export default function ModalDetails(props: ModalDetailsProps) {
                   >
                     {collaboratorRoleNames?.map((role) => (
                       <li
-                        className="p-0 cursor-pointer hover:bg-slate-200"
+                        className="cursor-pointer p-0 hover:bg-base-200"
                         key={role}
                         onClick={() =>
                           handleUpdateCollaboratorRole(collaborator.id, role)

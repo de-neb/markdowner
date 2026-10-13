@@ -27,7 +27,7 @@ export default function Editor() {
   const [parsedValue, setParsedValue] = useState("");
   const [content, setContent] = useState("");
   const [hasHighlightedText, setHasHighlightedText] = useState<boolean | null>(
-    false
+    false,
   );
 
   const previousDeltaDecorations = useRef<string[]>();
@@ -37,9 +37,10 @@ export default function Editor() {
   const tableSize = useSelector((state: RootState) => state.navbar.tableSize);
   const user = useSelector((state: RootState) => state.user.user);
   const viewingDocument = useSelector(
-    (state: RootState) => state.document.viewingDocument
+    (state: RootState) => state.document.viewingDocument,
   );
   const params = useParams();
+  const documentId = params.documentId;
   const dispatch = useDispatch();
 
   const debouncedSetContent = debounce((newContent: string) => {
@@ -76,11 +77,11 @@ export default function Editor() {
         const state = cursorChannel.presenceState();
 
         const latestState = Object.values(state).flatMap((userState: any) =>
-          userState.filter((item: typeof data) => item.cursor_position)
+          userState.filter((item: typeof data) => item.cursor_position),
         );
 
         const { document_content } = latestState.reduce((prev, curr) =>
-          new Date(prev.date) > new Date(curr.date) ? prev : curr
+          new Date(prev.date) > new Date(curr.date) ? prev : curr,
         );
 
         debouncedSetContent(document_content);
@@ -98,22 +99,22 @@ export default function Editor() {
                   item.cursor_position.lineNumber,
                   item.cursor_position.column,
                   item.cursor_position.lineNumber,
-                  item.cursor_position.column
+                  item.cursor_position.column,
                 ),
                 options: {
                   className: `absolute border-l-2 ${userColorClass}`,
                   isWholeLine: false,
                 },
               };
-            })
+            }),
         );
 
         previousDeltaDecorations.current =
           monacoEditorRef.current?.deltaDecorations(
             previousDeltaDecorations.current || [],
-            selections
+            selections,
           );
-      }
+      },
     );
   };
 
@@ -230,7 +231,7 @@ export default function Editor() {
             documentActions.setViewingDocument({
               ...viewingDocument,
               ...documentContent,
-            })
+            }),
           );
           dispatch(navbarActions.setNavAction(""));
         };
@@ -250,13 +251,13 @@ export default function Editor() {
       case "Download":
         downloadMarkdownFile(
           viewingDocument.title,
-          viewingDocument.content as string
+          viewingDocument.content as string,
         );
         break;
       default:
         if (Object.keys(MARKDOWN_SYNTAX).includes(navbarAction)) {
           insertTextAtCursor(
-            MARKDOWN_SYNTAX[navbarAction as keyof typeof MARKDOWN_SYNTAX]
+            MARKDOWN_SYNTAX[navbarAction as keyof typeof MARKDOWN_SYNTAX],
           );
         }
         getHighlightedText(navbarAction);
@@ -317,21 +318,27 @@ export default function Editor() {
   // on mounted load document and track cursor position
   useEffect(() => {
     const loadDocument = async () => {
-      const data = await getDocumentContentById(params.documentId as string);
+      const data = await getDocumentContentById(documentId as string);
       if (data) {
-        handleEditorChange(data?.content || "");
+        const documentContent = data.content || "";
+        setContent(documentContent);
+        const file = await remark()
+          .use(html)
+          .use(remarkGfm)
+          .process(documentContent);
+        setParsedValue(String(file));
       }
     };
     loadDocument();
-  }, [params, handleEditorChange]);
+  }, [documentId]);
 
   return (
     <div
       ref={container}
-      className="flex flex-nowrap min-h-full w-full max-w-screen no-scrollbar"
+      className="editor-workspace flex w-full max-w-screen flex-nowrap overflow-hidden"
     >
       <MonacoEditor
-        height="100vh"
+        height="100%"
         width={editorWidth}
         onChange={handleEditorChange}
         onMount={handleEditorDidMount}
@@ -339,7 +346,12 @@ export default function Editor() {
         value={viewingDocument.content}
         defaultLanguage="markdown"
         defaultValue="# Hello Markdown"
-        className="min-h-full"
+        theme={
+          document.documentElement.getAttribute("data-theme") === "forest"
+            ? "vs-dark"
+            : "vs"
+        }
+        className="h-full min-h-0"
       />
 
       <div
@@ -348,7 +360,7 @@ export default function Editor() {
         onMouseDown={handleOnMouseDown}
       ></div>
       <div
-        className="markdown-body p-4 card rounded-none bg-base-100 grid h-full overflow-y-auto w-100"
+        className="markdown-body min-h-0 min-w-0 p-4 card rounded-none bg-base-100 h-full overflow-y-auto"
         id="parser-container"
         dangerouslySetInnerHTML={{ __html: parsedValue }}
         style={{ width: outputWidth }}

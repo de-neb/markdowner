@@ -3,6 +3,9 @@ import { Link, useFetcher, useNavigate, useSearchParams } from "react-router";
 import { signUp, login } from "../client/auth";
 import { SignupData } from "../client/type";
 
+const GUEST_EMAIL = "goooood26@gmail.com";
+const GUEST_PASSWORD = "123456";
+
 export default function AuthForm() {
   const [searchParams] = useSearchParams();
   const isModeSignup = searchParams.get("mode") === "signup";
@@ -56,11 +59,26 @@ export default function AuthForm() {
     }
   };
 
+  const handleGuestLogin = async () => {
+    if (password.current) {
+      password.current.value = GUEST_PASSWORD;
+    }
+
+    const isSuccess = await login({
+      email: GUEST_EMAIL,
+      password: GUEST_PASSWORD,
+    });
+
+    if (isSuccess) {
+      navigate("/");
+    }
+  };
+
   return (
     <fetcher.Form
       ref={form}
       onSubmit={handleSubmit}
-      className="flex flex-col gap-4 w-full max-w-sm border-black bg-white border p-7 transition duration-300 hover:shadow-[5px_5px_0]"
+      className="auth-card flex w-full max-w-sm flex-col gap-4 border border-base-300 p-7 text-base-content shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-base-content/10"
     >
       <h1 className="font-mono text-2xl text-center font-semibold">
         #Markdowner
@@ -68,37 +86,37 @@ export default function AuthForm() {
       <h1 className="text-center text-xl ">
         {isModeSignup ? "Sign Up" : "Login"}
       </h1>
-      <label className="input input-bordered input-base-100 flex items-center gap-2 rounded-sm">
-        <i className="fa-solid fa-user"></i>
+      <label className="auth-field flex items-center gap-2 rounded-sm border border-base-300 px-3 py-2 text-base-content">
+        <i className="fa-solid fa-user text-base-content/70"></i>
         <input
           type="text"
           name="email"
-          className="grow"
+          className="input input-bordered input-base-100 grow border-0 bg-transparent p-0 text-base-content shadow-none outline-none placeholder:text-base-content/50 focus:outline-none"
           placeholder="Email"
           required
         />
       </label>
-      <label className="input input-bordered input-base-100 flex items-center gap-2 rounded-sm">
-        <i className="fa-solid fa-lock"></i>
+      <label className="auth-field flex items-center gap-2 rounded-sm border border-base-300 px-3 py-2 text-base-content">
+        <i className="fa-solid fa-lock text-base-content/70"></i>
         <input
           ref={password}
           onInput={handlePasswordInput}
           type="password"
           name="password"
-          className="grow"
+          className="input input-bordered input-base-100 grow border-0 bg-transparent p-0 text-base-content shadow-none outline-none placeholder:text-base-content/50 focus:outline-none"
           placeholder="Password"
           required
         />
       </label>
       {isModeSignup && (
         <div>
-          <label className="input input-bordered input-base-100 flex items-center gap-2 rounded-sm">
-            <i className="fa-solid fa-lock"></i>
+          <label className="auth-field flex items-center gap-2 rounded-sm border border-base-300 px-3 py-2 text-base-content">
+            <i className="fa-solid fa-lock text-base-content/70"></i>
             <input
               ref={confirmPassword}
               onInput={handlePasswordInput}
               type="password"
-              className="grow"
+              className="input input-bordered input-base-100 grow border-0 bg-transparent p-0 text-base-content shadow-none outline-none placeholder:text-base-content/50 focus:outline-none"
               placeholder="Confirm Password"
               required
             />
@@ -113,6 +131,14 @@ export default function AuthForm() {
 
       <button className="btn btn-primary block rounded-sm" type="submit">
         {isModeSignup ? "Sign Up" : "Login"}
+      </button>
+
+      <button
+        type="button"
+        className="btn btn-outline btn-secondary block rounded-sm"
+        onClick={handleGuestLogin}
+      >
+        Continue as Guest
       </button>
 
       <Link

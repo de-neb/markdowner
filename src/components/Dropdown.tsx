@@ -35,7 +35,7 @@ export default function Dropdown({
 }: DropdownProps) {
   const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
 
-  const customActivatorButtonClass = `btn btn-ghost hover:shadow-[5px_5px_0] m-1 ${
+  const customActivatorButtonClass = `btn btn-ghost m-1 transition duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/15 ${
     icon ? "btn-circle" : ""
   } ${activatorClass}`;
 
@@ -114,7 +114,9 @@ export default function Dropdown({
               >
                 <a
                   className={
-                    disabledActions.includes(typeof item === "string" ? item : item.title)
+                    disabledActions.includes(
+                      typeof item === "string" ? item : item.title,
+                    )
                       ? "pointer-events-none text-slate-400"
                       : ""
                   }

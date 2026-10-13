@@ -12,7 +12,7 @@ export default function DefaultLayout() {
   }
 
   return (
-    <div className="h-screen w-screen relative">
+    <div className="relative min-h-svh w-full">
       <Outlet />
       <Toast />
       <Loader />

@@ -27,7 +27,7 @@ export default function Button({
       data-tip={icon ? tooltipName : undefined}
     >
       <button
-        className={`btn transition duration-300  hover:shadow-[5px_5px_0] btn-${variant} btn-${size} ${className}`}
+        className={`btn transition duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/15 btn-${variant} btn-${size} ${className}`}
         {...props}
       >
         {icon && <i className={`fa-solid fa-${icon} text-${iconSize}`}></i>}

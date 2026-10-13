@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { logout } from "../client/auth";
 import { searchDocuments } from "../client/document";
@@ -19,11 +19,17 @@ export default function Navbar() {
   const dispatch = useDispatch();
 
   const user = useSelector((state: RootState) => state.user.user);
+  const [isDarkTheme, setIsDarkTheme] = useState(() => {
+    return (
+      globalThis.document?.documentElement.getAttribute("data-theme") !==
+      "lemonade"
+    );
+  });
 
   const searchRef = useRef<HTMLInputElement>(null);
 
   const handleSearchDocuments = async (
-    event: React.KeyboardEvent<HTMLInputElement>
+    event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (event.key === "Enter") {
       await searchDocuments("title", searchRef.current?.value as string);
@@ -31,11 +37,11 @@ export default function Navbar() {
   };
 
   const disabledActions = useSelector(
-    (state: RootState) => state.navbar.disabledActions
+    (state: RootState) => state.navbar.disabledActions,
   );
 
-  const document = useSelector(
-    (state: RootState) => state.document.viewingDocument
+  const viewingDocument = useSelector(
+    (state: RootState) => state.document.viewingDocument,
   );
 
   const documentTitle = useRef<HTMLInputElement>(null);
@@ -45,9 +51,9 @@ export default function Navbar() {
   const handleOnTitleInput = () => {
     dispatch(
       documentActions.setViewingDocument({
-        ...document,
+        ...viewingDocument,
         title: documentTitle.current?.value,
-      })
+      }),
     );
   };
 
@@ -72,7 +78,7 @@ export default function Navbar() {
             text: "",
             okText: "Add",
             slot: "OpenFile",
-          })
+          }),
         );
         break;
       default:
@@ -87,13 +93,13 @@ export default function Navbar() {
   const handleOnShare = () => {
     dispatch(
       modalActions.showModal({
-        title: `Share "${document.title}"`,
+        title: `Share "${viewingDocument.title}"`,
         text: "",
         okText: "Ok",
         slot: "ShareDocument",
-        payload: document.id,
+        payload: viewingDocument.id,
         modalClass: "!max-w-3xl !h-[400px] !min-h-[400px] !overflow-y-none",
-      })
+      }),
     );
   };
 
@@ -101,10 +107,33 @@ export default function Navbar() {
     dispatch(drawerActions.toggleDrawer());
   };
 
+  const toggleTheme = () => {
+    const nextTheme = isDarkTheme ? "lemonade" : "forest";
+    setIsDarkTheme(!isDarkTheme);
+    globalThis.document?.documentElement.setAttribute("data-theme", nextTheme);
+    globalThis.document?.documentElement.style.setProperty(
+      "color-scheme",
+      nextTheme === "forest" ? "dark" : "light",
+    );
+    localStorage.setItem("theme", nextTheme);
+  };
+
+  useEffect(() => {
+    const theme = localStorage.getItem("theme");
+    if (theme === "lemonade" || theme === "forest") {
+      setIsDarkTheme(theme === "forest");
+      globalThis.document?.documentElement.setAttribute("data-theme", theme);
+      globalThis.document?.documentElement.style.setProperty(
+        "color-scheme",
+        theme === "forest" ? "dark" : "light",
+      );
+    }
+  }, []);
+
   return (
     <>
-      <div className="navbar bg-base-100 border border-b-slate-600  backdrop-filter backdrop-blur-lg sticky h-auto top-0 left-0 z-50">
-        <div className="flex-none">
+      <div className="navbar sticky top-0 left-0 z-50 h-auto flex-nowrap items-center gap-2 border border-b-slate-600 bg-base-100/90 backdrop-blur-lg">
+        <div className="flex-none shrink-0">
           <a className="btn btn-ghost text-5xl" onClick={() => navigate("/")}>
             <i className="fa-solid fa-hashtag"></i>
             {!isEditorPage && (
@@ -119,7 +148,7 @@ export default function Navbar() {
               type="text"
               placeholder="Type here"
               className="input h-1/2 max-w-xs input-ghost font-semibold"
-              defaultValue={document.title}
+              defaultValue={viewingDocument.title}
               ref={documentTitle}
               onInput={handleOnTitleInput}
             />
@@ -151,24 +180,24 @@ export default function Navbar() {
         )}
 
         {!isEditorPage && (
-          <div className="flex-grow flex justify-center gap-1">
-            <label className="input input-bordered flex items-center gap-2">
+          <div className="flex min-w-0 flex-1 justify-center px-2">
+            <div className="input input-bordered flex w-full max-w-lg items-center gap-2">
               <i className="fa-solid fa-magnifying-glass"></i>
               <input
                 type="text"
-                className="grow w-[500px]"
+                className="grow border-0 bg-transparent p-0 shadow-none outline-none focus:outline-none"
                 placeholder="Search"
                 ref={searchRef}
                 onKeyDown={handleSearchDocuments}
               />
-              <kbd className="kbd kbd-sm">Enter</kbd>
-            </label>
+              <kbd className="kbd kbd-sm hidden sm:inline-flex">Enter</kbd>
+            </div>
           </div>
         )}
 
-        <div className="flex-none ml-auto">
+        <div className="ml-auto flex shrink-0 items-center gap-2 whitespace-nowrap">
           {isEditorPage && (
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2 whitespace-nowrap">
               <Button
                 icon="clock-rotate-left"
                 tooltipName="History"
@@ -179,7 +208,8 @@ export default function Navbar() {
 
               <Button
                 title="Share"
-                className="rounded-full bg-slate-200 mr-3"
+                variant="secondary"
+                className="rounded-full"
                 icon="share"
                 iconSize="md"
                 hasTextAndIcon
@@ -187,7 +217,16 @@ export default function Navbar() {
               ></Button>
             </div>
           )}
-          <div className="dropdown dropdown-end">
+          <button
+            type="button"
+            className="btn btn-circle btn-ghost"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            title={isDarkTheme ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            <i className={`fa-solid ${isDarkTheme ? "fa-sun" : "fa-moon"}`}></i>
+          </button>
+          <div className="dropdown dropdown-end flex shrink-0 items-center">
             <Button icon="user" variant="circle"></Button>
             <ul
               tabIndex={0}
